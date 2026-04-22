@@ -1,0 +1,3781 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EFSA — Profil nastavnika / Faculty Profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --efsa-blue: #1a3a8a;
+    --efsa-blue-dark: #122a66;
+    --efsa-blue-soft: #2a4ba8;
+    --efsa-green: #7bb53f;
+    --efsa-green-dark: #5e9129;
+    --efsa-green-soft: #9ecf63;
+    --ink: #0f172a;
+    --ink-muted: #475569;
+    --ink-faint: #94a3b8;
+    --paper: #fbfbf8;
+    --paper-2: #f4f4ee;
+    --line: #e5e7e0;
+    --line-strong: #d4d6cc;
+    --accent-bg: #f0f6ea;
+    --shadow-sm: 0 1px 2px rgba(15,23,42,.04);
+    --shadow-md: 0 4px 14px rgba(15,23,42,.06), 0 1px 3px rgba(15,23,42,.04);
+    --shadow-lg: 0 20px 40px -12px rgba(26,58,138,.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(26,58,138,.04) 0%, transparent 50%),
+      radial-gradient(circle at 85% 100%, rgba(123,181,63,.04) 0%, transparent 50%);
+    min-height: 100vh;
+  }
+
+  /* ============= HEADER ============= */
+  .top-bar {
+    background: white;
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    background: rgba(255,255,255,.92);
+  }
+  .top-bar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .brand-mark {
+    width: 44px;
+    height: 44px;
+    background: var(--efsa-blue);
+    color: white;
+    display: grid;
+    place-items: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    position: relative;
+  }
+  .brand-mark::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 12px;
+    height: 12px;
+    background: var(--efsa-green);
+  }
+  .brand-text { line-height: 1.15; }
+  .brand-text .title {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--efsa-blue);
+    letter-spacing: -0.01em;
+  }
+  .brand-text .sub {
+    font-size: 11px;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-top: 2px;
+  }
+  .top-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .lang-switch {
+    display: flex;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    overflow: hidden;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .lang-switch button {
+    border: 0;
+    background: transparent;
+    padding: 6px 14px;
+    cursor: pointer;
+    color: var(--ink-muted);
+    font-family: inherit;
+    transition: all .15s;
+  }
+  .lang-switch button.active {
+    background: var(--efsa-blue);
+    color: white;
+  }
+  .btn {
+    border: 0;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-weight: 500;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all .15s;
+  }
+  .btn-primary { background: var(--efsa-blue); color: white; }
+  .btn-primary:hover { background: var(--efsa-blue-dark); }
+  .btn-ghost { background: transparent; color: var(--ink-muted); border: 1px solid var(--line-strong); }
+  .btn-ghost:hover { border-color: var(--efsa-blue); color: var(--efsa-blue); }
+  .btn-green { background: var(--efsa-green); color: white; }
+  .btn-green:hover { background: var(--efsa-green-dark); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn-icon { padding: 8px; }
+
+  /* ============= LAYOUT ============= */
+  .layout {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 36px;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; padding: 20px; gap: 20px; }
+    .sidebar { position: static !important; }
+  }
+
+  /* ============= SIDEBAR ============= */
+  .sidebar {
+    position: sticky;
+    top: 90px;
+  }
+  .nav-head {
+    font-family: 'Fraunces', serif;
+    font-size: 11px;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    padding: 0 12px 10px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 8px;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--ink-muted);
+    font-size: 13.5px;
+    font-weight: 500;
+    transition: all .12s;
+    position: relative;
+  }
+  .nav-item:hover { background: var(--paper-2); color: var(--ink); }
+  .nav-item.active {
+    background: var(--accent-bg);
+    color: var(--efsa-blue);
+  }
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    background: var(--efsa-green);
+    border-radius: 2px;
+  }
+  .nav-letter {
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+    background: white;
+    border: 1px solid var(--line-strong);
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 11px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .nav-item.active .nav-letter {
+    background: var(--efsa-blue);
+    color: white;
+    border-color: var(--efsa-blue);
+  }
+  .nav-count {
+    margin-left: auto;
+    font-size: 11px;
+    background: var(--line);
+    padding: 1px 7px;
+    border-radius: 10px;
+    color: var(--ink-muted);
+  }
+  .nav-item.active .nav-count {
+    background: var(--efsa-green);
+    color: white;
+  }
+
+  /* ============= MAIN ============= */
+  .main {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    min-height: 600px;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 28px 36px 20px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, #fafaf7 0%, white 100%);
+    position: relative;
+  }
+  .section-header::after {
+    content: '';
+    position: absolute;
+    left: 36px;
+    bottom: -1px;
+    width: 40px;
+    height: 2px;
+    background: var(--efsa-green);
+  }
+  .section-kicker {
+    font-family: 'Fraunces', serif;
+    font-size: 42px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--efsa-green);
+    letter-spacing: -0.03em;
+    margin-bottom: 10px;
+    display: inline-block;
+  }
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--efsa-blue);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  .section-desc {
+    color: var(--ink-muted);
+    font-size: 14px;
+    margin-top: 8px;
+    max-width: 620px;
+  }
+  .section-body { padding: 28px 36px 36px; }
+  @media (max-width: 640px) {
+    .section-header, .section-body { padding-left: 20px; padding-right: 20px; }
+  }
+
+  /* ============= FORM ============= */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+  .form-grid.cols-1 { grid-template-columns: 1fr; }
+  .form-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 640px) {
+    .form-grid, .form-grid.cols-3 { grid-template-columns: 1fr; }
+  }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field.full { grid-column: 1 / -1; }
+  .field label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+  }
+  .field label .hint {
+    font-weight: 400;
+    color: var(--ink-faint);
+    margin-left: 6px;
+  }
+  input[type="text"], input[type="email"], input[type="tel"], input[type="url"],
+  input[type="date"], input[type="number"], select, textarea {
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--ink);
+    background: white;
+    transition: all .12s;
+    width: 100%;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: 0;
+    border-color: var(--efsa-blue);
+    box-shadow: 0 0 0 3px rgba(26,58,138,.1);
+  }
+  textarea { resize: vertical; min-height: 80px; font-family: inherit; }
+  select { cursor: pointer; background: white; }
+
+  /* ============= REPEATER ITEMS ============= */
+  .items-wrap { display: flex; flex-direction: column; gap: 14px; }
+  .item-card {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: white;
+    overflow: hidden;
+    transition: all .15s;
+  }
+  .item-card:hover { border-color: var(--line-strong); box-shadow: var(--shadow-sm); }
+  .item-head {
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--paper-2);
+    cursor: pointer;
+    user-select: none;
+    gap: 12px;
+  }
+  .item-head:hover { background: var(--accent-bg); }
+  .item-title {
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+  }
+  .item-title .idx {
+    width: 22px;
+    height: 22px;
+    background: var(--efsa-blue);
+    color: white;
+    border-radius: 4px;
+    display: grid;
+    place-items: center;
+    font-family: 'Fraunces', serif;
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .item-title .txt {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .item-title .txt.placeholder { color: var(--ink-faint); font-weight: 400; font-style: italic; }
+  .item-actions { display: flex; gap: 4px; align-items: center; flex-shrink: 0; }
+  .icon-btn {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    background: transparent;
+    border-radius: 5px;
+    cursor: pointer;
+    color: var(--ink-muted);
+    transition: all .12s;
+  }
+  .icon-btn:hover { background: white; color: var(--efsa-blue); }
+  .icon-btn.danger:hover { background: #fee; color: #c53030; }
+  .chevron { transition: transform .2s; }
+  .item-card.open .chevron { transform: rotate(180deg); }
+  .item-body {
+    padding: 0 18px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .3s ease, padding .3s ease;
+  }
+  .item-card.open .item-body {
+    padding: 18px;
+    max-height: 2000px;
+  }
+
+  .add-btn {
+    width: 100%;
+    padding: 14px;
+    border: 1.5px dashed var(--line-strong);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--ink-muted);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all .15s;
+  }
+  .add-btn:hover {
+    border-color: var(--efsa-green);
+    color: var(--efsa-green-dark);
+    background: var(--accent-bg);
+  }
+
+  /* ============= PUBLICATIONS SUB-TABS ============= */
+  .pub-tabs {
+    display: flex;
+    gap: 2px;
+    background: var(--paper-2);
+    padding: 4px;
+    border-radius: 8px;
+    margin-bottom: 22px;
+    overflow-x: auto;
+  }
+  .pub-tab {
+    padding: 8px 14px;
+    border: 0;
+    background: transparent;
+    border-radius: 6px;
+    font-family: inherit;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--ink-muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all .15s;
+  }
+  .pub-tab:hover { color: var(--ink); }
+  .pub-tab.active {
+    background: white;
+    color: var(--efsa-blue);
+    box-shadow: var(--shadow-sm);
+  }
+  .pub-tab .count {
+    font-size: 11px;
+    background: var(--line);
+    padding: 1px 6px;
+    border-radius: 8px;
+    margin-left: 6px;
+  }
+  .pub-tab.active .count {
+    background: var(--accent-bg);
+    color: var(--efsa-green-dark);
+  }
+
+  /* ============= CITATION PARSER ============= */
+  .parser-box {
+    background: linear-gradient(135deg, #f0f6ea 0%, #e8f2dc 100%);
+    border: 1px solid var(--efsa-green-soft);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 18px;
+  }
+  .parser-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .parser-head h4 {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--efsa-blue);
+  }
+  .parser-badge {
+    background: var(--efsa-green);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .parser-desc { font-size: 13px; color: var(--ink-muted); margin-bottom: 12px; }
+  .parser-box textarea {
+    background: white;
+    border-color: var(--efsa-green-soft);
+  }
+  .parser-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .parser-status {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-left: auto;
+  }
+  .parser-status.ok { color: var(--efsa-green-dark); font-weight: 500; }
+  .parser-status.err { color: #c53030; font-weight: 500; }
+
+  /* ============= EXPORT PANEL ============= */
+  .export-section {
+    padding: 20px 36px;
+    background: linear-gradient(180deg, white 0%, var(--paper-2) 100%);
+    border-top: 1px solid var(--line);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  .export-meta {
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  .export-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* ============= TOAST ============= */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--ink);
+    color: white;
+    padding: 12px 18px;
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    font-size: 13px;
+    z-index: 1000;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all .3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { background: var(--efsa-green-dark); }
+  .toast.error { background: #c53030; }
+
+  /* ============= PROFILE PHOTO ============= */
+  .photo-upload {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 18px;
+    background: var(--paper-2);
+    border-radius: 10px;
+  }
+  .photo-preview {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--line-strong);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    color: var(--ink-faint);
+  }
+  .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+  .photo-info h5 { font-size: 14px; margin-bottom: 3px; }
+  .photo-info p { font-size: 12px; color: var(--ink-muted); margin-bottom: 8px; }
+
+  /* ============= TAGS INPUT ============= */
+  .tags-input {
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    padding: 6px;
+    background: white;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 40px;
+    align-items: center;
+  }
+  .tags-input:focus-within {
+    border-color: var(--efsa-blue);
+    box-shadow: 0 0 0 3px rgba(26,58,138,.1);
+  }
+  .tag {
+    background: var(--accent-bg);
+    color: var(--efsa-green-dark);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tag button {
+    border: 0; background: transparent; cursor: pointer;
+    color: inherit; font-size: 14px; line-height: 1; padding: 0;
+  }
+  .tags-input input {
+    border: 0; outline: 0; flex: 1; min-width: 100px;
+    padding: 4px 6px; font-size: 13px; font-family: inherit;
+  }
+
+  /* ============= SAVE INDICATOR ============= */
+  .save-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--efsa-green);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .save-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--ink-muted);
+  }
+
+  /* ============= MODAL ============= */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,.5);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 20px;
+  }
+  .modal-backdrop.show { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 12px;
+    max-width: 520px;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  .modal-head {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--line);
+    background: var(--paper-2);
+  }
+  .modal-head h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    color: var(--efsa-blue);
+  }
+  .modal-body { padding: 24px; }
+  .modal-foot {
+    padding: 16px 24px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  .empty-state {
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--ink-faint);
+  }
+  .empty-state svg { margin-bottom: 12px; opacity: .4; }
+  .empty-state h4 {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    color: var(--ink-muted);
+    margin-bottom: 6px;
+  }
+
+  /* Checkbox */
+  .check-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--ink-muted);
+    cursor: pointer;
+  }
+  .check-row input { width: 16px; height: 16px; accent-color: var(--efsa-blue); }
+
+  .section-hidden { display: none; }
+
+  /* ============= AUTH OVERLAY ============= */
+  .auth-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #e8eefb 0%, #f0f6ea 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+    padding: 20px;
+  }
+  .auth-overlay.hidden { display: none; }
+  .auth-card {
+    background: white;
+    border-radius: 16px;
+    padding: 36px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 20px 60px -20px rgba(26,58,138,.25);
+  }
+  .auth-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  .auth-title {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--efsa-blue);
+    line-height: 1.2;
+  }
+  .auth-sub {
+    font-size: 11px;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 3px;
+  }
+  .auth-heading {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    color: var(--efsa-blue);
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .auth-desc {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-bottom: 22px;
+    line-height: 1.5;
+  }
+  .auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .auth-field label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .auth-field input {
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 14px;
+    transition: all .12s;
+  }
+  .auth-field input:focus {
+    outline: 0;
+    border-color: var(--efsa-blue);
+    box-shadow: 0 0 0 3px rgba(26,58,138,.1);
+  }
+  .auth-btn {
+    width: 100%;
+    padding: 11px;
+    font-size: 14px;
+    margin-top: 6px;
+    justify-content: center;
+  }
+  .auth-divider {
+    text-align: center;
+    margin: 18px 0;
+    position: relative;
+    color: var(--ink-faint);
+    font-size: 12px;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: var(--line);
+  }
+  .auth-divider::before { left: 0; }
+  .auth-divider::after { right: 0; }
+  .auth-divider span {
+    background: white;
+    padding: 0 12px;
+    position: relative;
+  }
+  .auth-link-row {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 13px;
+  }
+  .auth-link-row a {
+    color: var(--efsa-blue);
+    text-decoration: none;
+  }
+  .auth-link-row a:hover { text-decoration: underline; }
+  .auth-error {
+    background: #fee;
+    border: 1px solid #fbb;
+    color: #c53030;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  .auth-success {
+    background: var(--accent-bg);
+    border: 1px solid var(--efsa-green-soft);
+    color: var(--efsa-green-dark);
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  .auth-footer {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--ink-faint);
+  }
+  .auth-dot-connected {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ink-faint);
+  }
+  .auth-dot-connected.connected { background: var(--efsa-green); }
+  .auth-dot-connected.error { background: #c53030; }
+
+  /* ============= USER MENU ============= */
+  .user-menu { position: relative; }
+  .user-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--paper-2);
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 4px 12px 4px 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--ink);
+    transition: all .12s;
+  }
+  .user-chip:hover { border-color: var(--efsa-blue); }
+  .user-avatar {
+    width: 26px;
+    height: 26px;
+    background: var(--efsa-blue);
+    color: white;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .user-email {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  @media (max-width: 700px) {
+    .user-email { max-width: 80px; }
+  }
+  .user-dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    background: white;
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    min-width: 180px;
+    overflow: hidden;
+    display: none;
+    z-index: 150;
+  }
+  .user-dropdown.show { display: block; }
+  .user-dropdown button {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    padding: 10px 14px;
+    text-align: left;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  .user-dropdown button:hover { background: var(--paper-2); }
+  .user-dropdown button.danger { color: #c53030; border-top: 1px solid var(--line); }
+  .user-dropdown button.danger:hover { background: #fee; }
+
+  /* Save indicator states */
+  .save-indicator.saving .save-dot { background: #f59e0b; }
+  .save-indicator.error .save-dot { background: #c53030; animation: none; }
+
+  /* ============= ADMIN DASHBOARD ============= */
+  .admin-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,.6);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 400;
+    padding: 20px;
+  }
+  .admin-modal.show { display: flex; }
+  .admin-inner {
+    background: white;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 1100px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+  .admin-head {
+    padding: 22px 28px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, var(--paper-2) 0%, white 100%);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .admin-title {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--efsa-blue);
+    letter-spacing: -0.01em;
+  }
+  .admin-sub {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-top: 3px;
+  }
+  .admin-filters {
+    padding: 18px 28px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .admin-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 200px;
+  }
+  .admin-field label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .admin-field input, .admin-field select {
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 13px;
+  }
+  .admin-stats {
+    padding: 12px 28px;
+    background: var(--accent-bg);
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--ink);
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .admin-stat-num {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    color: var(--efsa-blue);
+    font-size: 16px;
+    margin-right: 6px;
+  }
+  .admin-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 28px;
+  }
+  .admin-row {
+    display: grid;
+    grid-template-columns: 1fr 220px 80px 80px 80px;
+    gap: 14px;
+    align-items: center;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+  }
+  .admin-row:hover { background: var(--paper-2); }
+  .admin-row-name {
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .admin-row-email {
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  .admin-row-meta {
+    font-size: 12px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .admin-row-num {
+    text-align: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    color: var(--efsa-blue);
+    font-size: 15px;
+  }
+  .admin-row-actions {
+    text-align: right;
+  }
+  .admin-row-actions button {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    color: var(--efsa-blue);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 8px;
+  }
+  .admin-row-actions button:hover { text-decoration: underline; }
+  .admin-actions {
+    padding: 16px 28px;
+    border-top: 1px solid var(--line);
+    background: var(--paper-2);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 700px) {
+    .admin-row { grid-template-columns: 1fr 70px 70px; gap: 8px; }
+    .admin-row-email, .admin-row-meta { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============= LOGIN OVERLAY ============= -->
+<div id="authOverlay" class="auth-overlay">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="brand-mark" style="width:56px;height:56px;font-size:28px">E</div>
+      <div>
+        <div class="auth-title">Profil nastavnika</div>
+        <div class="auth-sub">Ekonomski fakultet u Sarajevu</div>
+      </div>
+    </div>
+
+    <div id="authLoginView">
+      <h2 class="auth-heading">Prijava</h2>
+      <p class="auth-desc">Koristite vaš <strong>@efsa.unsa.ba</strong> email za prijavu. Ako se prijavljujete prvi put, postavit ćete svoju lozinku u sljedećem koraku.</p>
+
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="authEmail" placeholder="ime.prezime@efsa.unsa.ba" autocomplete="email">
+      </div>
+      <div class="auth-field">
+        <label>Lozinka</label>
+        <input type="password" id="authPassword" placeholder="••••••••" autocomplete="current-password">
+      </div>
+
+      <div class="auth-error" id="authError" style="display:none"></div>
+
+      <button class="btn btn-primary auth-btn" onclick="doLogin()">
+        <span id="authLoginLabel">Prijava</span>
+      </button>
+
+      <div class="auth-divider"><span>ili</span></div>
+
+      <button class="btn btn-ghost auth-btn" onclick="switchToSignup()">Prvi put se prijavljujem</button>
+
+      <div class="auth-link-row">
+        <a href="#" onclick="showForgotPassword(); return false;">Zaboravljena lozinka?</a>
+      </div>
+    </div>
+
+    <div id="authSignupView" style="display:none">
+      <h2 class="auth-heading">Registracija</h2>
+      <p class="auth-desc">Unesite vaš EFSA email i postavite lozinku. Primit ćete email s linkom za potvrdu.</p>
+
+      <div class="auth-field">
+        <label>Email (@efsa.unsa.ba)</label>
+        <input type="email" id="signupEmail" placeholder="ime.prezime@efsa.unsa.ba">
+      </div>
+      <div class="auth-field">
+        <label>Lozinka (min. 8 znakova)</label>
+        <input type="password" id="signupPassword" placeholder="••••••••">
+      </div>
+      <div class="auth-field">
+        <label>Ponovite lozinku</label>
+        <input type="password" id="signupPassword2" placeholder="••••••••">
+      </div>
+
+      <div class="auth-error" id="signupError" style="display:none"></div>
+      <div class="auth-success" id="signupSuccess" style="display:none"></div>
+
+      <button class="btn btn-primary auth-btn" onclick="doSignup()">Registruj se</button>
+      <div class="auth-link-row">
+        <a href="#" onclick="switchToLogin(); return false;">Nazad na prijavu</a>
+      </div>
+    </div>
+
+    <div class="auth-footer">
+      <span class="auth-dot-connected" id="authConnDot"></span>
+      <span id="authConnText">Povezivanje…</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============= ADMIN DASHBOARD MODAL ============= -->
+<div id="adminModal" class="admin-modal">
+  <div class="admin-inner">
+    <div class="admin-head">
+      <div>
+        <div class="admin-title">Administratorski pregled</div>
+        <div class="admin-sub">Pregled i izvoz profila svih nastavnika</div>
+      </div>
+      <button class="icon-btn" onclick="closeAdmin()" title="Zatvori" style="width:36px;height:36px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="admin-filters">
+      <div class="admin-field">
+        <label>Pretraga (ime, email, katedra)</label>
+        <input type="text" id="adminSearch" oninput="renderAdminList()" placeholder="npr. Turulja, marketing…">
+      </div>
+      <div class="admin-field" style="max-width:200px">
+        <label>Katedra</label>
+        <select id="adminDept" onchange="renderAdminList()">
+          <option value="">Sve katedre</option>
+        </select>
+      </div>
+      <div class="admin-field" style="max-width:140px">
+        <label>Min. publikacija</label>
+        <input type="number" id="adminMinPubs" min="0" value="0" oninput="renderAdminList()">
+      </div>
+    </div>
+
+    <div class="admin-stats" id="adminStats"></div>
+
+    <div class="admin-list" id="adminList"></div>
+
+    <div class="admin-actions">
+      <button class="btn btn-ghost btn-sm" onclick="adminExportJson()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Izvezi filtrirane kao JSON
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="adminExportCsv()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Izvezi publikacije (CSV)
+      </button>
+      <button class="btn btn-primary btn-sm" onclick="adminExportAllPdfs()" id="adminPdfBtn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Generiši sve CV-jeve (PDF)
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============= TOP BAR ============= -->
+<div class="top-bar" id="topBar" style="display:none">
+  <div class="top-bar-inner">
+    <div class="brand">
+      <div class="brand-mark">E</div>
+      <div class="brand-text">
+        <div class="title" data-t="brandTitle">Profil nastavnika</div>
+        <div class="sub" data-t="brandSub">Ekonomski fakultet u Sarajevu</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span class="save-indicator" id="saveIndicator"><span class="save-dot"></span><span id="saveText">Automatski sačuvano</span></span>
+      <div class="lang-switch">
+        <button class="active" onclick="setLang('bs')">BHS</button>
+        <button onclick="setLang('en')">EN</button>
+      </div>
+      <button class="btn btn-green btn-sm" onclick="openAdmin()" id="adminBtn" style="display:none">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Admin
+      </button>
+      <div class="user-menu">
+        <button class="user-chip" onclick="toggleUserMenu()" id="userChip">
+          <span class="user-avatar" id="userAvatar">?</span>
+          <span class="user-email" id="userEmail">…</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="user-dropdown" id="userDropdown">
+          <button onclick="clearAll()">Resetuj podatke</button>
+          <button onclick="doLogout()" class="danger">Odjavi se</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============= MAIN LAYOUT ============= -->
+<div class="layout" id="mainLayout" style="display:none">
+
+  <!-- ============= SIDEBAR ============= -->
+  <aside class="sidebar">
+    <div class="nav-head" data-t="navHead">Sekcije</div>
+    <nav id="nav"></nav>
+  </aside>
+
+  <!-- ============= MAIN CONTENT ============= -->
+  <main class="main">
+
+    <!-- A) LIČNI PODACI -->
+    <div class="section" data-section="personal">
+      <div class="section-header">
+        <div class="section-kicker">A</div>
+        <h2 class="section-title" data-t="personalTitle">Lični podaci</h2>
+        <p class="section-desc" data-t="personalDesc">Osnovne kontakt informacije i biografski podaci.</p>
+      </div>
+      <div class="section-body">
+        <div class="form-grid">
+          <div class="photo-upload">
+            <div class="photo-preview" id="photoPreview">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+            </div>
+            <div class="photo-info">
+              <h5 data-t="photoTitle">Profilna fotografija</h5>
+              <p data-t="photoHint">JPG ili PNG, preporučeno 400×400 px</p>
+              <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhoto(event)">
+              <button class="btn btn-ghost btn-sm" onclick="document.getElementById('photoInput').click()" data-t="photoBtn">Odaberi sliku</button>
+            </div>
+          </div>
+          <div class="field"><label data-t="firstName">Ime</label><input type="text" data-field="personal.firstName"></div>
+          <div class="field"><label data-t="lastName">Prezime</label><input type="text" data-field="personal.lastName"></div>
+          <div class="field"><label data-t="titlePre">Titula (prije imena) <span class="hint" data-t="titlePreHint">npr. Prof. dr.</span></label><input type="text" data-field="personal.titlePre"></div>
+          <div class="field"><label data-t="titlePost">Titula (poslije imena) <span class="hint" data-t="titlePostHint">npr. PhD</span></label><input type="text" data-field="personal.titlePost"></div>
+          <div class="field"><label data-t="position">Trenutna pozicija</label><input type="text" data-field="personal.position" placeholder="Redovni profesor / Docent / Asistent..."></div>
+          <div class="field"><label data-t="department">Katedra / Odsjek</label><input type="text" data-field="personal.department"></div>
+          <div class="field"><label>Email</label><input type="email" data-field="personal.email"></div>
+          <div class="field"><label data-t="phone">Telefon</label><input type="tel" data-field="personal.phone"></div>
+          <div class="field"><label data-t="office">Kancelarija</label><input type="text" data-field="personal.office" placeholder="npr. 301"></div>
+          <div class="field"><label data-t="consultHours">Termini konsultacija</label><input type="text" data-field="personal.consultHours" placeholder="npr. Pon 10-12h"></div>
+          <div class="field"><label data-t="birthDate">Datum rođenja</label><input type="date" data-field="personal.birthDate"></div>
+          <div class="field"><label data-t="birthPlace">Mjesto rođenja</label><input type="text" data-field="personal.birthPlace"></div>
+          <div class="field"><label data-t="nationality">Državljanstvo</label><input type="text" data-field="personal.nationality"></div>
+          <div class="field"><label>ORCID</label><input type="text" data-field="personal.orcid" placeholder="0000-0000-0000-0000"></div>
+          <div class="field"><label data-t="scholar">Google Scholar</label><input type="url" data-field="personal.scholar" placeholder="https://scholar.google.com/..."></div>
+          <div class="field"><label>LinkedIn</label><input type="url" data-field="personal.linkedin"></div>
+          <div class="field full"><label data-t="website">Web stranica / Drugi profili</label><input type="url" data-field="personal.website"></div>
+          <div class="field full"><label data-t="bio">Kratka biografija</label><textarea data-field="personal.bio" rows="4" placeholder=""></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- B) RADNO ISKUSTVO -->
+    <div class="section section-hidden" data-section="experience">
+      <div class="section-header">
+        <div class="section-kicker">B</div>
+        <h2 class="section-title" data-t="experienceTitle">Radno iskustvo</h2>
+        <p class="section-desc" data-t="experienceDesc">Sve pozicije od najnovije prema najstarijoj.</p>
+      </div>
+      <div class="section-body">
+        <div class="items-wrap" id="experience-items"></div>
+        <button class="add-btn" onclick="addItem('experience')" style="margin-top:14px"><span style="font-size:16px">+</span> <span data-t="addExperience">Dodaj radno iskustvo</span></button>
+      </div>
+    </div>
+
+    <!-- C) OBRAZOVANJE -->
+    <div class="section section-hidden" data-section="education">
+      <div class="section-header">
+        <div class="section-kicker">C</div>
+        <h2 class="section-title" data-t="educationTitle">Obrazovanje</h2>
+        <p class="section-desc" data-t="educationDesc">Obrazovanje od najnovijeg prema najstarijem.</p>
+      </div>
+      <div class="section-body">
+        <div class="items-wrap" id="education-items"></div>
+        <button class="add-btn" onclick="addItem('education')" style="margin-top:14px"><span style="font-size:16px">+</span> <span data-t="addEducation">Dodaj obrazovanje</span></button>
+      </div>
+    </div>
+
+    <!-- D) DODATNO PROFESIONALNO USAVRŠAVANJE -->
+    <div class="section section-hidden" data-section="training">
+      <div class="section-header">
+        <div class="section-kicker">D</div>
+        <h2 class="section-title" data-t="trainingTitle">Dodatno profesionalno usavršavanje</h2>
+        <p class="section-desc" data-t="trainingDesc">Kursevi, obuke, certifikati, studijski boravci.</p>
+      </div>
+      <div class="section-body">
+        <div class="items-wrap" id="training-items"></div>
+        <button class="add-btn" onclick="addItem('training')" style="margin-top:14px"><span style="font-size:16px">+</span> <span data-t="addTraining">Dodaj usavršavanje</span></button>
+      </div>
+    </div>
+
+    <!-- E) PUBLIKACIJE -->
+    <div class="section section-hidden" data-section="publications">
+      <div class="section-header">
+        <div class="section-kicker">E</div>
+        <h2 class="section-title" data-t="publicationsTitle">Publikacije</h2>
+        <p class="section-desc" data-t="publicationsDesc">Naučni i stručni radovi — uključuje pametni parser za citate.</p>
+      </div>
+      <div class="section-body">
+        <div class="pub-tabs" id="pub-tabs">
+          <button class="pub-tab active" data-subtab="journals" onclick="switchPubTab('journals')" data-t="pubJournals">Članci u časopisima <span class="count" id="cnt-journals">0</span></button>
+          <button class="pub-tab" data-subtab="conferences" onclick="switchPubTab('conferences')" data-t="pubConferences">Konferencije <span class="count" id="cnt-conferences">0</span></button>
+          <button class="pub-tab" data-subtab="books" onclick="switchPubTab('books')" data-t="pubBooks">Knjige <span class="count" id="cnt-books">0</span></button>
+          <button class="pub-tab" data-subtab="chapters" onclick="switchPubTab('chapters')" data-t="pubChapters">Poglavlja <span class="count" id="cnt-chapters">0</span></button>
+          <button class="pub-tab" data-subtab="other" onclick="switchPubTab('other')" data-t="pubOther">Ostalo <span class="count" id="cnt-other">0</span></button>
+        </div>
+
+        <!-- CITATION PARSER -->
+        <div class="parser-box">
+          <div class="parser-head">
+            <h4 data-t="parserTitle">Pametni parser citata</h4>
+            <span class="parser-badge">APA · Harvard · IEEE · MLA</span>
+          </div>
+          <p class="parser-desc" data-t="parserDesc">Zalijepite jedan ili više citata (svaki u novom redu). Parser prepoznaje autore, godinu, naslov, časopis, volume, stranice, DOI i automatski popunjava polja.</p>
+          <textarea id="citationInput" rows="4" placeholder="Npr:&#10;Alibegović, D., & Čaušević, F. (2023). Monetary policy transmission in Bosnia and Herzegovina. Journal of Economics, 45(3), 234-251. https://doi.org/10.1234/je.2023.045"></textarea>
+          <div class="parser-row">
+            <button class="btn btn-green btn-sm" onclick="parseCitations()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+              <span data-t="parserBtn">Raspoznaj i dodaj</span>
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('citationInput').value=''" data-t="clearBtn">Očisti</button>
+            <span class="parser-status" id="parserStatus"></span>
+          </div>
+        </div>
+
+        <div id="pub-content">
+          <div class="items-wrap" id="journals-items"></div>
+          <button class="add-btn" onclick="addItem('journals')" style="margin-top:14px" id="add-journals"><span style="font-size:16px">+</span> <span data-t="addJournalArticle">Dodaj članak u časopisu</span></button>
+
+          <div class="items-wrap" id="conferences-items" style="display:none"></div>
+          <button class="add-btn" onclick="addItem('conferences')" style="margin-top:14px; display:none" id="add-conferences"><span style="font-size:16px">+</span> <span data-t="addConference">Dodaj konferencijski rad</span></button>
+
+          <div class="items-wrap" id="books-items" style="display:none"></div>
+          <button class="add-btn" onclick="addItem('books')" style="margin-top:14px; display:none" id="add-books"><span style="font-size:16px">+</span> <span data-t="addBook">Dodaj knjigu</span></button>
+
+          <div class="items-wrap" id="chapters-items" style="display:none"></div>
+          <button class="add-btn" onclick="addItem('chapters')" style="margin-top:14px; display:none" id="add-chapters"><span style="font-size:16px">+</span> <span data-t="addChapter">Dodaj poglavlje</span></button>
+
+          <div class="items-wrap" id="other-items" style="display:none"></div>
+          <button class="add-btn" onclick="addItem('other')" style="margin-top:14px; display:none" id="add-other"><span style="font-size:16px">+</span> <span data-t="addOther">Dodaj publikaciju</span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- F) PROJEKTI -->
+    <div class="section section-hidden" data-section="projects">
+      <div class="section-header">
+        <div class="section-kicker">F</div>
+        <h2 class="section-title" data-t="projectsTitle">Projekti</h2>
+        <p class="section-desc" data-t="projectsDesc">Naučni, istraživački i aplikativni projekti.</p>
+      </div>
+      <div class="section-body">
+        <div class="items-wrap" id="projects-items"></div>
+        <button class="add-btn" onclick="addItem('projects')" style="margin-top:14px"><span style="font-size:16px">+</span> <span data-t="addProject">Dodaj projekt</span></button>
+      </div>
+    </div>
+
+    <!-- G) KONSULTANTSKI ANGAŽMANI -->
+    <div class="section section-hidden" data-section="consulting">
+      <div class="section-header">
+        <div class="section-kicker">G</div>
+        <h2 class="section-title" data-t="consultingTitle">Konsultantski angažmani</h2>
+        <p class="section-desc" data-t="consultingDesc">Savjetodavni rad za preduzeća, institucije i organizacije.</p>
+      </div>
+      <div class="section-body">
+        <div class="items-wrap" id="consulting-items"></div>
+        <button class="add-btn" onclick="addItem('consulting')" style="margin-top:14px"><span style="font-size:16px">+</span> <span data-t="addConsulting">Dodaj angažman</span></button>
+      </div>
+    </div>
+
+    <!-- H) NAGRADE I PRIZNANJA -->
+    <div class="section section-hidden" data-section="awards">
+      <div class="section-header">
+        <div class="section-kicker">H</div>
+        <h2 class="section-title" data-t="awardsTitle">Nagrade i priznanja</h2>
+        <p class="section-desc" data-t="awardsDesc">Akademske i profesionalne nagrade, priznanja, stipendije.</p>
+      </div>
+      <div class="section-body">
+        <div class="items-wrap" id="awards-items"></div>
+        <button class="add-btn" onclick="addItem('awards')" style="margin-top:14px"><span style="font-size:16px">+</span> <span data-t="addAward">Dodaj nagradu</span></button>
+      </div>
+    </div>
+
+    <!-- I) ČLANSTVA -->
+    <div class="section section-hidden" data-section="memberships">
+      <div class="section-header">
+        <div class="section-kicker">I</div>
+        <h2 class="section-title" data-t="membershipsTitle">Članstva u tijelima i asocijacijama</h2>
+        <p class="section-desc" data-t="membershipsDesc">Profesionalna udruženja, uređivački odbori, komisije.</p>
+      </div>
+      <div class="section-body">
+        <div class="items-wrap" id="memberships-items"></div>
+        <button class="add-btn" onclick="addItem('memberships')" style="margin-top:14px"><span style="font-size:16px">+</span> <span data-t="addMembership">Dodaj članstvo</span></button>
+      </div>
+    </div>
+
+    <!-- EXPORT -->
+    <div class="export-section">
+      <div class="export-meta">
+        <span data-t="exportMeta">Izvezite svoj kompletan profil:</span>
+      </div>
+      <div class="export-btns">
+        <button class="btn btn-ghost btn-sm" onclick="exportJSON()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          JSON
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="importJSON()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span data-t="importBtn">Uvezi</span>
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="exportDOCX()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Word
+        </button>
+        <button class="btn btn-green btn-sm" onclick="exportPDF()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          PDF
+        </button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<input type="file" id="importFileInput" accept="application/json" style="display:none" onchange="handleImport(event)">
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODAL (confirm reset) -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-head"><h3 id="modalTitle">Potvrda</h3></div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()" data-t="cancelBtn">Odustani</button>
+      <button class="btn btn-sm" id="modalConfirm" style="background:#c53030;color:white">Potvrdi</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   TRANSLATIONS
+   ================================================================ */
+const TRANSLATIONS = {
+  bs: {
+    brandTitle: "Profil nastavnika",
+    brandSub: "Ekonomski fakultet u Sarajevu",
+    autoSaved: "Automatski sačuvano",
+    resetBtn: "Resetuj",
+    navHead: "Sekcije",
+    personal: "Lični podaci",
+    experience: "Radno iskustvo",
+    education: "Obrazovanje",
+    training: "Usavršavanje",
+    publications: "Publikacije",
+    projects: "Projekti",
+    consulting: "Konsultantski angažmani",
+    awards: "Nagrade",
+    memberships: "Članstva",
+
+    personalTitle: "Lični podaci",
+    personalDesc: "Osnovne kontakt informacije i biografski podaci.",
+    photoTitle: "Profilna fotografija",
+    photoHint: "JPG ili PNG, preporučeno 400×400 px",
+    photoBtn: "Odaberi sliku",
+    firstName: "Ime",
+    lastName: "Prezime",
+    titlePre: "Titula (prije imena)",
+    titlePreHint: "npr. Prof. dr.",
+    titlePost: "Titula (poslije imena)",
+    titlePostHint: "npr. PhD",
+    position: "Trenutna pozicija",
+    department: "Katedra / Odsjek",
+    phone: "Telefon",
+    office: "Kancelarija",
+    consultHours: "Termini konsultacija",
+    birthDate: "Datum rođenja",
+    birthPlace: "Mjesto rođenja",
+    nationality: "Državljanstvo",
+    scholar: "Google Scholar",
+    website: "Web stranica / Drugi profili",
+    bio: "Kratka biografija",
+
+    experienceTitle: "Radno iskustvo",
+    experienceDesc: "Sve pozicije od najnovije prema najstarijoj.",
+    addExperience: "Dodaj radno iskustvo",
+
+    educationTitle: "Obrazovanje",
+    educationDesc: "Obrazovanje od najnovijeg prema najstarijem.",
+    addEducation: "Dodaj obrazovanje",
+
+    trainingTitle: "Dodatno profesionalno usavršavanje",
+    trainingDesc: "Kursevi, obuke, certifikati, studijski boravci.",
+    addTraining: "Dodaj usavršavanje",
+
+    publicationsTitle: "Publikacije",
+    publicationsDesc: "Naučni i stručni radovi — uključuje pametni parser za citate.",
+    pubJournals: "Članci u časopisima",
+    pubConferences: "Konferencije",
+    pubBooks: "Knjige",
+    pubChapters: "Poglavlja",
+    pubOther: "Ostalo",
+    parserTitle: "Pametni parser citata",
+    parserDesc: "Zalijepite jedan ili više citata (svaki u novom redu). Parser prepoznaje autore, godinu, naslov, časopis, volume, stranice, DOI i automatski popunjava polja.",
+    parserBtn: "Raspoznaj i dodaj",
+    clearBtn: "Očisti",
+    addJournalArticle: "Dodaj članak u časopisu",
+    addConference: "Dodaj konferencijski rad",
+    addBook: "Dodaj knjigu",
+    addChapter: "Dodaj poglavlje",
+    addOther: "Dodaj publikaciju",
+
+    projectsTitle: "Projekti",
+    projectsDesc: "Naučni, istraživački i aplikativni projekti.",
+    addProject: "Dodaj projekt",
+
+    consultingTitle: "Konsultantski angažmani",
+    consultingDesc: "Savjetodavni rad za preduzeća, institucije i organizacije.",
+    addConsulting: "Dodaj angažman",
+
+    awardsTitle: "Nagrade i priznanja",
+    awardsDesc: "Akademske i profesionalne nagrade, priznanja, stipendije.",
+    addAward: "Dodaj nagradu",
+
+    membershipsTitle: "Članstva u tijelima i asocijacijama",
+    membershipsDesc: "Profesionalna udruženja, uređivački odbori, komisije.",
+    addMembership: "Dodaj članstvo",
+
+    exportMeta: "Izvezite svoj kompletan profil:",
+    importBtn: "Uvezi",
+    cancelBtn: "Odustani",
+
+    // Field labels inside repeaters
+    position_label: "Pozicija / Zvanje",
+    employer: "Poslodavac / Institucija",
+    location: "Lokacija",
+    dateFrom: "Od (datum)",
+    dateTo: "Do (datum)",
+    current: "Trenutno",
+    description: "Opis poslova / odgovornosti",
+    degree: "Stepen / Zvanje",
+    field_of_study: "Oblast studija",
+    institution: "Institucija",
+    thesis: "Naslov rada / disertacije",
+    mentor: "Mentor",
+    gpa: "Prosjek ocjena",
+    training_name: "Naziv usavršavanja",
+    provider: "Organizator / Pružalac",
+    duration: "Trajanje",
+    certificate: "Certifikat / Diploma",
+    authors: "Autori",
+    title: "Naslov",
+    journal: "Časopis",
+    volume: "Volume",
+    issue: "Broj / Issue",
+    pages: "Stranice",
+    year: "Godina",
+    doi: "DOI",
+    url: "URL",
+    publisher: "Izdavač",
+    isbn: "ISBN",
+    conference: "Konferencija",
+    location_city: "Mjesto i država",
+    book_title: "Naslov knjige",
+    editors: "Urednici",
+    type: "Vrsta",
+    project_title: "Naziv projekta",
+    role: "Uloga",
+    funder: "Finansijer",
+    budget: "Budžet",
+    partners: "Partneri",
+    client: "Klijent",
+    service_type: "Vrsta usluge",
+    award_name: "Naziv nagrade",
+    organization: "Organizacija",
+    date: "Datum",
+    body: "Tijelo / Organizacija",
+    added: "Dodano",
+    parsed: "Uspješno raspoznato",
+    couldNotParse: "Nije bilo moguće prepoznati",
+    photoUploaded: "Fotografija učitana",
+    exported: "Izvezeno",
+    imported: "Uvezeno",
+    confirmReset: "Da li ste sigurni da želite obrisati sve podatke? Ova akcija se ne može poništiti.",
+    resetDone: "Svi podaci obrisani",
+    fillFirst: "Popunite barem ime i prezime prije izvoza"
+  },
+  en: {
+    brandTitle: "Faculty Profile",
+    brandSub: "School of Economics and Business, Sarajevo",
+    autoSaved: "Auto-saved",
+    resetBtn: "Reset",
+    navHead: "Sections",
+    personal: "Personal info",
+    experience: "Work experience",
+    education: "Education",
+    training: "Training",
+    publications: "Publications",
+    projects: "Projects",
+    consulting: "Consulting engagements",
+    awards: "Awards",
+    memberships: "Memberships",
+
+    personalTitle: "Personal information",
+    personalDesc: "Basic contact information and biographical data.",
+    photoTitle: "Profile photo",
+    photoHint: "JPG or PNG, recommended 400×400 px",
+    photoBtn: "Choose image",
+    firstName: "First name",
+    lastName: "Last name",
+    titlePre: "Title (before name)",
+    titlePreHint: "e.g. Prof. Dr.",
+    titlePost: "Title (after name)",
+    titlePostHint: "e.g. PhD",
+    position: "Current position",
+    department: "Department",
+    phone: "Phone",
+    office: "Office",
+    consultHours: "Office hours",
+    birthDate: "Date of birth",
+    birthPlace: "Place of birth",
+    nationality: "Nationality",
+    scholar: "Google Scholar",
+    website: "Website / Other profiles",
+    bio: "Short biography",
+
+    experienceTitle: "Work experience",
+    experienceDesc: "All positions from most recent to oldest.",
+    addExperience: "Add work experience",
+
+    educationTitle: "Education",
+    educationDesc: "Education from most recent to oldest.",
+    addEducation: "Add education",
+
+    trainingTitle: "Professional development",
+    trainingDesc: "Courses, training, certificates, study visits.",
+    addTraining: "Add training",
+
+    publicationsTitle: "Publications",
+    publicationsDesc: "Scientific and professional papers — includes a smart citation parser.",
+    pubJournals: "Journal articles",
+    pubConferences: "Conferences",
+    pubBooks: "Books",
+    pubChapters: "Book chapters",
+    pubOther: "Other",
+    parserTitle: "Smart citation parser",
+    parserDesc: "Paste one or more citations (each on a new line). The parser detects authors, year, title, journal, volume, pages, DOI and fills fields automatically.",
+    parserBtn: "Parse and add",
+    clearBtn: "Clear",
+    addJournalArticle: "Add journal article",
+    addConference: "Add conference paper",
+    addBook: "Add book",
+    addChapter: "Add chapter",
+    addOther: "Add publication",
+
+    projectsTitle: "Projects",
+    projectsDesc: "Scientific, research, and applied projects.",
+    addProject: "Add project",
+
+    consultingTitle: "Consulting engagements",
+    consultingDesc: "Advisory work for companies, institutions, and organizations.",
+    addConsulting: "Add engagement",
+
+    awardsTitle: "Awards and recognitions",
+    awardsDesc: "Academic and professional awards, recognitions, scholarships.",
+    addAward: "Add award",
+
+    membershipsTitle: "Memberships in bodies and associations",
+    membershipsDesc: "Professional associations, editorial boards, committees.",
+    addMembership: "Add membership",
+
+    exportMeta: "Export your complete profile:",
+    importBtn: "Import",
+    cancelBtn: "Cancel",
+
+    position_label: "Position / Title",
+    employer: "Employer / Institution",
+    location: "Location",
+    dateFrom: "From (date)",
+    dateTo: "To (date)",
+    current: "Current",
+    description: "Description / Responsibilities",
+    degree: "Degree",
+    field_of_study: "Field of study",
+    institution: "Institution",
+    thesis: "Thesis / Dissertation title",
+    mentor: "Supervisor",
+    gpa: "GPA",
+    training_name: "Training name",
+    provider: "Provider / Organizer",
+    duration: "Duration",
+    certificate: "Certificate / Diploma",
+    authors: "Authors",
+    title: "Title",
+    journal: "Journal",
+    volume: "Volume",
+    issue: "Issue",
+    pages: "Pages",
+    year: "Year",
+    doi: "DOI",
+    url: "URL",
+    publisher: "Publisher",
+    isbn: "ISBN",
+    conference: "Conference",
+    location_city: "City and country",
+    book_title: "Book title",
+    editors: "Editors",
+    type: "Type",
+    project_title: "Project title",
+    role: "Role",
+    funder: "Funder",
+    budget: "Budget",
+    partners: "Partners",
+    client: "Client",
+    service_type: "Service type",
+    award_name: "Award name",
+    organization: "Organization",
+    date: "Date",
+    body: "Body / Organization",
+    added: "Added",
+    parsed: "Successfully parsed",
+    couldNotParse: "Could not parse",
+    photoUploaded: "Photo uploaded",
+    exported: "Exported",
+    imported: "Imported",
+    confirmReset: "Are you sure you want to delete all data? This cannot be undone.",
+    resetDone: "All data cleared",
+    fillFirst: "Please fill in at least first and last name before exporting"
+  }
+};
+
+/* ================================================================
+   STATE
+   ================================================================ */
+let lang = 'bs';
+const STORAGE_KEY = 'efsa_faculty_profile_v1';
+
+// Fields that have translatable text content (stored as {bs: "", en: ""} objects)
+// All other fields (emails, URLs, dates, numbers, names) are single-value strings.
+const LANG_FIELDS = new Set([
+  // personal
+  'personal.titlePre', 'personal.titlePost', 'personal.position', 'personal.department',
+  'personal.office', 'personal.consultHours', 'personal.birthPlace', 'personal.nationality',
+  'personal.bio',
+  // experience
+  'experience.position', 'experience.employer', 'experience.location', 'experience.description',
+  // education
+  'education.degree', 'education.field', 'education.institution', 'education.location',
+  'education.thesis', 'education.mentor',
+  // training
+  'training.name', 'training.provider', 'training.location', 'training.certificate', 'training.description',
+  // publications — journals
+  'journals.authors', 'journals.title', 'journals.journal',
+  // publications — conferences
+  'conferences.authors', 'conferences.title', 'conferences.conference', 'conferences.location',
+  // publications — books
+  'books.authors', 'books.title', 'books.publisher', 'books.location',
+  // publications — chapters
+  'chapters.authors', 'chapters.title', 'chapters.book_title', 'chapters.editors',
+  'chapters.publisher', 'chapters.location',
+  // publications — other
+  'other.authors', 'other.title', 'other.type', 'other.publisher', 'other.description',
+  // projects
+  'projects.title', 'projects.role', 'projects.funder', 'projects.partners', 'projects.description',
+  // consulting
+  'consulting.client', 'consulting.service_type', 'consulting.role', 'consulting.description',
+  // awards
+  'awards.name', 'awards.organization', 'awards.description',
+  // memberships
+  'memberships.organization', 'memberships.role', 'memberships.description'
+]);
+
+// Returns the value for the current language. If the field is bilingual and
+// current language value is empty, falls back to the other language (so
+// prebacivanje jezika ne prikazuje prazna polja kada korisnik još nije prevodio).
+function getLangVal(section, field, obj) {
+  const key = section + '.' + field;
+  const raw = obj[field];
+  if (LANG_FIELDS.has(key)) {
+    if (raw && typeof raw === 'object') {
+      return raw[lang] || raw[lang === 'bs' ? 'en' : 'bs'] || '';
+    }
+    // Legacy string value — treat as current language
+    return raw || '';
+  }
+  return raw || '';
+}
+
+// Sets the value in the current language. If the OTHER language value is
+// currently empty, mirrors the value there too (so typing on either side
+// auto-fills the other side until they diverge).
+function setLangVal(section, field, obj, value) {
+  const key = section + '.' + field;
+  if (LANG_FIELDS.has(key)) {
+    const other = lang === 'bs' ? 'en' : 'bs';
+    let cur = obj[field];
+    if (!cur || typeof cur !== 'object') {
+      // Migrate legacy string -> object
+      cur = { bs: '', en: '' };
+      if (typeof obj[field] === 'string' && obj[field]) cur[lang] = obj[field];
+    }
+    cur[lang] = value;
+    // Mirror to other language only if other side is empty
+    if (!cur[other] || cur[other].trim() === '') {
+      cur[other] = value;
+    }
+    obj[field] = cur;
+  } else {
+    obj[field] = value;
+  }
+}
+
+let state = {
+  personal: {},
+  photo: null,
+  experience: [],
+  education: [],
+  training: [],
+  journals: [],
+  conferences: [],
+  books: [],
+  chapters: [],
+  other: [],
+  projects: [],
+  consulting: [],
+  awards: [],
+  memberships: []
+};
+
+let activeSection = 'personal';
+let activePubTab = 'journals';
+
+/* ================================================================
+   SECTION DEFINITIONS
+   ================================================================ */
+const SECTIONS = [
+  { key: 'personal', letter: 'A', i18n: 'personal' },
+  { key: 'experience', letter: 'B', i18n: 'experience' },
+  { key: 'education', letter: 'C', i18n: 'education' },
+  { key: 'training', letter: 'D', i18n: 'training' },
+  { key: 'publications', letter: 'E', i18n: 'publications' },
+  { key: 'projects', letter: 'F', i18n: 'projects' },
+  { key: 'consulting', letter: 'G', i18n: 'consulting' },
+  { key: 'awards', letter: 'H', i18n: 'awards' },
+  { key: 'memberships', letter: 'I', i18n: 'memberships' }
+];
+
+// Field configurations for each repeater type
+const FIELD_CONFIG = {
+  experience: [
+    { key: 'position', type: 'text', label: 'position_label', col: 1 },
+    { key: 'employer', type: 'text', label: 'employer', col: 1 },
+    { key: 'location', type: 'text', label: 'location', col: 2 },
+    { key: 'dateFrom', type: 'month', label: 'dateFrom', col: 2 },
+    { key: 'dateTo', type: 'month', label: 'dateTo', col: 2 },
+    { key: 'current', type: 'check', label: 'current', col: 2 },
+    { key: 'description', type: 'textarea', label: 'description', col: 1 }
+  ],
+  education: [
+    { key: 'degree', type: 'text', label: 'degree', col: 2 },
+    { key: 'field', type: 'text', label: 'field_of_study', col: 2 },
+    { key: 'institution', type: 'text', label: 'institution', col: 1 },
+    { key: 'location', type: 'text', label: 'location', col: 2 },
+    { key: 'dateFrom', type: 'month', label: 'dateFrom', col: 2 },
+    { key: 'dateTo', type: 'month', label: 'dateTo', col: 2 },
+    { key: 'gpa', type: 'text', label: 'gpa', col: 2 },
+    { key: 'thesis', type: 'text', label: 'thesis', col: 1 },
+    { key: 'mentor', type: 'text', label: 'mentor', col: 2 }
+  ],
+  training: [
+    { key: 'name', type: 'text', label: 'training_name', col: 1 },
+    { key: 'provider', type: 'text', label: 'provider', col: 2 },
+    { key: 'location', type: 'text', label: 'location', col: 2 },
+    { key: 'dateFrom', type: 'month', label: 'dateFrom', col: 2 },
+    { key: 'dateTo', type: 'month', label: 'dateTo', col: 2 },
+    { key: 'certificate', type: 'text', label: 'certificate', col: 1 },
+    { key: 'description', type: 'textarea', label: 'description', col: 1 }
+  ],
+  journals: [
+    { key: 'authors', type: 'text', label: 'authors', col: 1 },
+    { key: 'year', type: 'text', label: 'year', col: 2 },
+    { key: 'title', type: 'textarea', label: 'title', col: 1 },
+    { key: 'journal', type: 'text', label: 'journal', col: 1 },
+    { key: 'volume', type: 'text', label: 'volume', col: 3 },
+    { key: 'issue', type: 'text', label: 'issue', col: 3 },
+    { key: 'pages', type: 'text', label: 'pages', col: 3 },
+    { key: 'doi', type: 'text', label: 'doi', col: 2 },
+    { key: 'url', type: 'text', label: 'url', col: 2 }
+  ],
+  conferences: [
+    { key: 'authors', type: 'text', label: 'authors', col: 1 },
+    { key: 'year', type: 'text', label: 'year', col: 2 },
+    { key: 'title', type: 'textarea', label: 'title', col: 1 },
+    { key: 'conference', type: 'text', label: 'conference', col: 1 },
+    { key: 'location', type: 'text', label: 'location_city', col: 2 },
+    { key: 'pages', type: 'text', label: 'pages', col: 2 },
+    { key: 'doi', type: 'text', label: 'doi', col: 2 },
+    { key: 'url', type: 'text', label: 'url', col: 2 }
+  ],
+  books: [
+    { key: 'authors', type: 'text', label: 'authors', col: 1 },
+    { key: 'year', type: 'text', label: 'year', col: 2 },
+    { key: 'title', type: 'textarea', label: 'book_title', col: 1 },
+    { key: 'publisher', type: 'text', label: 'publisher', col: 2 },
+    { key: 'location', type: 'text', label: 'location_city', col: 2 },
+    { key: 'isbn', type: 'text', label: 'isbn', col: 2 },
+    { key: 'url', type: 'text', label: 'url', col: 2 }
+  ],
+  chapters: [
+    { key: 'authors', type: 'text', label: 'authors', col: 1 },
+    { key: 'year', type: 'text', label: 'year', col: 2 },
+    { key: 'title', type: 'textarea', label: 'title', col: 1 },
+    { key: 'book_title', type: 'text', label: 'book_title', col: 1 },
+    { key: 'editors', type: 'text', label: 'editors', col: 2 },
+    { key: 'pages', type: 'text', label: 'pages', col: 2 },
+    { key: 'publisher', type: 'text', label: 'publisher', col: 2 },
+    { key: 'location', type: 'text', label: 'location_city', col: 2 },
+    { key: 'isbn', type: 'text', label: 'isbn', col: 2 },
+    { key: 'doi', type: 'text', label: 'doi', col: 2 }
+  ],
+  other: [
+    { key: 'type', type: 'text', label: 'type', col: 2 },
+    { key: 'year', type: 'text', label: 'year', col: 2 },
+    { key: 'authors', type: 'text', label: 'authors', col: 1 },
+    { key: 'title', type: 'textarea', label: 'title', col: 1 },
+    { key: 'publisher', type: 'text', label: 'publisher', col: 2 },
+    { key: 'url', type: 'text', label: 'url', col: 2 },
+    { key: 'description', type: 'textarea', label: 'description', col: 1 }
+  ],
+  projects: [
+    { key: 'title', type: 'text', label: 'project_title', col: 1 },
+    { key: 'role', type: 'text', label: 'role', col: 2 },
+    { key: 'funder', type: 'text', label: 'funder', col: 2 },
+    { key: 'dateFrom', type: 'month', label: 'dateFrom', col: 2 },
+    { key: 'dateTo', type: 'month', label: 'dateTo', col: 2 },
+    { key: 'budget', type: 'text', label: 'budget', col: 2 },
+    { key: 'partners', type: 'text', label: 'partners', col: 2 },
+    { key: 'url', type: 'text', label: 'url', col: 1 },
+    { key: 'description', type: 'textarea', label: 'description', col: 1 }
+  ],
+  consulting: [
+    { key: 'client', type: 'text', label: 'client', col: 1 },
+    { key: 'service_type', type: 'text', label: 'service_type', col: 2 },
+    { key: 'role', type: 'text', label: 'role', col: 2 },
+    { key: 'dateFrom', type: 'month', label: 'dateFrom', col: 2 },
+    { key: 'dateTo', type: 'month', label: 'dateTo', col: 2 },
+    { key: 'description', type: 'textarea', label: 'description', col: 1 }
+  ],
+  awards: [
+    { key: 'name', type: 'text', label: 'award_name', col: 1 },
+    { key: 'organization', type: 'text', label: 'organization', col: 2 },
+    { key: 'date', type: 'month', label: 'date', col: 2 },
+    { key: 'description', type: 'textarea', label: 'description', col: 1 }
+  ],
+  memberships: [
+    { key: 'organization', type: 'text', label: 'body', col: 1 },
+    { key: 'role', type: 'text', label: 'role', col: 2 },
+    { key: 'dateFrom', type: 'month', label: 'dateFrom', col: 2 },
+    { key: 'dateTo', type: 'month', label: 'dateTo', col: 2 },
+    { key: 'current', type: 'check', label: 'current', col: 2 },
+    { key: 'description', type: 'textarea', label: 'description', col: 1 }
+  ]
+};
+
+// Helper: return current-language value of a field on an item (handles both
+// string and {bs,en} object values)
+function itv(item, field) {
+  const v = item[field];
+  if (v == null) return '';
+  if (typeof v === 'object') return v[lang] || v[lang === 'bs' ? 'en' : 'bs'] || '';
+  return v;
+}
+
+const ITEM_TITLE_KEY = {
+  experience: (it) => [itv(it,'position'), itv(it,'employer')].filter(Boolean).join(' · '),
+  education: (it) => [itv(it,'degree'), itv(it,'institution')].filter(Boolean).join(' · '),
+  training: (it) => [itv(it,'name'), itv(it,'provider')].filter(Boolean).join(' · '),
+  journals: (it) => [itv(it,'title'), itv(it,'journal'), it.year].filter(Boolean).join(' · '),
+  conferences: (it) => [itv(it,'title'), itv(it,'conference'), it.year].filter(Boolean).join(' · '),
+  books: (it) => [itv(it,'title'), itv(it,'publisher'), it.year].filter(Boolean).join(' · '),
+  chapters: (it) => [itv(it,'title'), itv(it,'book_title'), it.year].filter(Boolean).join(' · '),
+  other: (it) => [itv(it,'title'), itv(it,'type'), it.year].filter(Boolean).join(' · '),
+  projects: (it) => [itv(it,'title'), itv(it,'funder')].filter(Boolean).join(' · '),
+  consulting: (it) => [itv(it,'client'), itv(it,'service_type')].filter(Boolean).join(' · '),
+  awards: (it) => [itv(it,'name'), itv(it,'organization')].filter(Boolean).join(' · '),
+  memberships: (it) => [itv(it,'organization'), itv(it,'role')].filter(Boolean).join(' · ')
+};
+
+const PUB_KEYS = ['journals','conferences','books','chapters','other'];
+
+/* ================================================================
+   INIT
+   ================================================================ */
+function init() {
+  loadState();
+  buildNav();
+  showSection('personal');
+  bindPersonalFields();
+  renderAllRepeaters();
+  updateLang();
+  updatePubCounts();
+  if (state.photo) {
+    document.getElementById('photoPreview').innerHTML = `<img src="${state.photo}" alt="">`;
+  }
+}
+
+function t(key) {
+  return TRANSLATIONS[lang][key] || key;
+}
+
+function setLang(l, ev) {
+  lang = l;
+  document.querySelectorAll('.lang-switch button').forEach(b => {
+    b.classList.toggle('active', b.textContent.trim().toLowerCase().startsWith(l === 'bs' ? 'bhs' : 'en'));
+  });
+  document.documentElement.lang = l === 'bs' ? 'bs' : 'en';
+  updateLang();
+  buildNav();
+  refreshPersonalFields();
+  renderAllRepeaters();
+}
+
+function updateLang() {
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const key = el.getAttribute('data-t');
+    if (TRANSLATIONS[lang][key]) el.textContent = TRANSLATIONS[lang][key];
+  });
+}
+
+/* ================================================================
+   NAVIGATION
+   ================================================================ */
+function buildNav() {
+  const nav = document.getElementById('nav');
+  nav.innerHTML = '';
+  SECTIONS.forEach(s => {
+    const count = getSectionCount(s.key);
+    const el = document.createElement('div');
+    el.className = 'nav-item' + (activeSection === s.key ? ' active' : '');
+    el.onclick = () => showSection(s.key);
+    el.innerHTML = `
+      <div class="nav-letter">${s.letter}</div>
+      <span>${t(s.i18n)}</span>
+      ${count > 0 ? `<span class="nav-count">${count}</span>` : ''}
+    `;
+    nav.appendChild(el);
+  });
+}
+
+function getSectionCount(key) {
+  if (key === 'personal') return 0;
+  if (key === 'publications') {
+    return PUB_KEYS.reduce((s, k) => s + (state[k]?.length || 0), 0);
+  }
+  return state[key]?.length || 0;
+}
+
+function showSection(key) {
+  activeSection = key;
+  document.querySelectorAll('.section').forEach(s => {
+    s.classList.toggle('section-hidden', s.getAttribute('data-section') !== key);
+  });
+  buildNav();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ================================================================
+   PERSONAL FIELDS
+   ================================================================ */
+function bindPersonalFields() {
+  document.querySelectorAll('[data-field]').forEach(input => {
+    const path = input.getAttribute('data-field').split('.');
+    // path is ['personal', 'fieldName']
+    const section = path[0];
+    const field = path[path.length - 1];
+    // Ensure section object exists
+    if (!state[section]) state[section] = {};
+    // Load value (respecting bilingual mode)
+    input.value = getLangVal(section, field, state[section]);
+    // Save
+    input.addEventListener('input', () => {
+      setLangVal(section, field, state[section], input.value);
+      saveState();
+    });
+  });
+}
+
+// Called when language switches — refresh all field values from state
+function refreshPersonalFields() {
+  document.querySelectorAll('[data-field]').forEach(input => {
+    const path = input.getAttribute('data-field').split('.');
+    const section = path[0];
+    const field = path[path.length - 1];
+    if (state[section]) {
+      input.value = getLangVal(section, field, state[section]);
+    }
+  });
+}
+
+function handlePhoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    state.photo = ev.target.result;
+    document.getElementById('photoPreview').innerHTML = `<img src="${state.photo}" alt="">`;
+    saveState();
+    toast(t('photoUploaded'), 'success');
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ================================================================
+   REPEATER RENDERING
+   ================================================================ */
+function renderAllRepeaters() {
+  Object.keys(FIELD_CONFIG).forEach(key => renderRepeater(key));
+  updatePubCounts();
+}
+
+function renderRepeater(key) {
+  const container = document.getElementById(key + '-items');
+  if (!container) return;
+  container.innerHTML = '';
+  const items = state[key] || [];
+  if (items.length === 0) {
+    container.innerHTML = `<div class="empty-state">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="14" y2="13"/></svg>
+      <h4>—</h4>
+    </div>`;
+    return;
+  }
+  items.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'item-card' + (item._open ? ' open' : '');
+    const titleFn = ITEM_TITLE_KEY[key];
+    const titleText = titleFn ? titleFn(item) : '';
+    card.innerHTML = `
+      <div class="item-head" onclick="toggleItem('${key}', ${idx})">
+        <div class="item-title">
+          <span class="idx">${idx + 1}</span>
+          <span class="txt ${!titleText ? 'placeholder' : ''}">${escape(titleText) || '—'}</span>
+        </div>
+        <div class="item-actions" onclick="event.stopPropagation()">
+          ${idx > 0 ? `<button class="icon-btn" onclick="moveItem('${key}', ${idx}, -1)" title="↑"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg></button>` : ''}
+          ${idx < items.length - 1 ? `<button class="icon-btn" onclick="moveItem('${key}', ${idx}, 1)" title="↓"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>` : ''}
+          <button class="icon-btn danger" onclick="removeItem('${key}', ${idx})" title="Delete">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 01-2 2H9a2 2 0 01-2-2L5 6"/></svg>
+          </button>
+          <button class="icon-btn" onclick="toggleItem('${key}', ${idx})" title="Toggle">
+            <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="item-body">
+        ${renderItemForm(key, idx, item)}
+      </div>
+    `;
+    container.appendChild(card);
+  });
+  bindItemFields(key);
+}
+
+function renderItemForm(key, idx, item) {
+  const fields = FIELD_CONFIG[key];
+  let html = '<div class="form-grid">';
+  fields.forEach(f => {
+    const label = t(f.label);
+    const fullClass = f.col === 1 ? ' full' : '';
+    // Use bilingual-aware getter for value display
+    const val = getLangVal(key, f.key, item);
+    if (f.type === 'text' || f.type === 'month') {
+      const type = f.type === 'month' ? 'month' : 'text';
+      html += `<div class="field${fullClass}"><label>${label}</label><input type="${type}" data-item="${key}:${idx}:${f.key}" value="${escape(val)}"></div>`;
+    } else if (f.type === 'textarea') {
+      html += `<div class="field${fullClass}"><label>${label}</label><textarea data-item="${key}:${idx}:${f.key}" rows="3">${escape(val)}</textarea></div>`;
+    } else if (f.type === 'check') {
+      const checked = item[f.key] ? 'checked' : '';
+      html += `<div class="field${fullClass}"><label class="check-row"><input type="checkbox" data-item="${key}:${idx}:${f.key}" ${checked}> <span>${label}</span></label></div>`;
+    }
+  });
+  html += '</div>';
+  return html;
+}
+
+function bindItemFields(key) {
+  document.querySelectorAll(`[data-item^="${key}:"]`).forEach(input => {
+    const [k, idx, field] = input.getAttribute('data-item').split(':');
+    input.addEventListener('input', () => {
+      const i = parseInt(idx);
+      if (input.type === 'checkbox') {
+        state[k][i][field] = input.checked;
+      } else {
+        // Use bilingual-aware setter — auto-mirrors to other language if empty
+        setLangVal(k, field, state[k][i], input.value);
+      }
+      saveState();
+      // Update title in the header
+      const titleEl = input.closest('.item-card').querySelector('.item-title .txt');
+      const titleText = ITEM_TITLE_KEY[k](state[k][i]);
+      titleEl.textContent = titleText || '—';
+      titleEl.classList.toggle('placeholder', !titleText);
+      buildNav();
+      updatePubCounts();
+    });
+  });
+}
+
+function addItem(key) {
+  if (!state[key]) state[key] = [];
+  state[key].forEach(it => it._open = false);
+  state[key].unshift({ _open: true });
+  saveState();
+  renderRepeater(key);
+  buildNav();
+  updatePubCounts();
+}
+
+function removeItem(key, idx) {
+  state[key].splice(idx, 1);
+  saveState();
+  renderRepeater(key);
+  buildNav();
+  updatePubCounts();
+}
+
+function moveItem(key, idx, dir) {
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= state[key].length) return;
+  [state[key][idx], state[key][newIdx]] = [state[key][newIdx], state[key][idx]];
+  saveState();
+  renderRepeater(key);
+}
+
+function toggleItem(key, idx) {
+  state[key][idx]._open = !state[key][idx]._open;
+  saveState();
+  renderRepeater(key);
+}
+
+/* ================================================================
+   PUBLICATIONS SUB-TABS
+   ================================================================ */
+function switchPubTab(tab) {
+  activePubTab = tab;
+  document.querySelectorAll('.pub-tab').forEach(t => {
+    t.classList.toggle('active', t.getAttribute('data-subtab') === tab);
+  });
+  PUB_KEYS.forEach(k => {
+    document.getElementById(k + '-items').style.display = (k === tab) ? '' : 'none';
+    document.getElementById('add-' + k).style.display = (k === tab) ? '' : 'none';
+  });
+}
+
+function updatePubCounts() {
+  PUB_KEYS.forEach(k => {
+    const el = document.getElementById('cnt-' + k);
+    if (el) el.textContent = (state[k]?.length || 0);
+  });
+}
+
+/* ================================================================
+   CITATION PARSER
+   ================================================================ */
+function parseCitations() {
+  const text = document.getElementById('citationInput').value.trim();
+  if (!text) {
+    setParserStatus(t('couldNotParse'), 'err');
+    return;
+  }
+  // Split by double newlines or single newline if looks like separate citations
+  let citations = text.split(/\n\s*\n/).map(c => c.trim()).filter(Boolean);
+  if (citations.length === 1) {
+    // Try single newlines
+    citations = text.split(/\n/).map(c => c.trim()).filter(Boolean);
+  }
+
+  let added = 0;
+  citations.forEach(c => {
+    const parsed = parseCitation(c);
+    if (parsed) {
+      const targetTab = parsed._type;
+      if (!state[targetTab]) state[targetTab] = [];
+      delete parsed._type;
+      parsed._open = false;
+      // Convert translatable fields into {bs, en} objects so the same citation
+      // appears on both languages until user explicitly edits one side
+      const newItem = {};
+      Object.keys(parsed).forEach(fk => {
+        const fullKey = targetTab + '.' + fk;
+        if (LANG_FIELDS.has(fullKey) && parsed[fk]) {
+          newItem[fk] = { bs: parsed[fk], en: parsed[fk] };
+        } else {
+          newItem[fk] = parsed[fk];
+        }
+      });
+      state[targetTab].unshift(newItem);
+      added++;
+    }
+  });
+
+  if (added > 0) {
+    saveState();
+    renderAllRepeaters();
+    buildNav();
+    document.getElementById('citationInput').value = '';
+    setParserStatus(`✓ ${t('parsed')}: ${added}`, 'ok');
+    toast(`${t('added')}: ${added} ${added === 1 ? 'citat' : 'citata'}`, 'success');
+  } else {
+    setParserStatus(`✗ ${t('couldNotParse')}`, 'err');
+  }
+}
+
+function setParserStatus(msg, cls) {
+  const el = document.getElementById('parserStatus');
+  el.textContent = msg;
+  el.className = 'parser-status ' + (cls || '');
+  setTimeout(() => { el.textContent = ''; el.className = 'parser-status'; }, 4000);
+}
+
+// Main citation parser — handles APA, Harvard, IEEE, MLA variants
+function parseCitation(raw) {
+  let text = raw.trim();
+  if (!text || text.length < 20) return null;
+
+  const result = {
+    authors: '',
+    year: '',
+    title: '',
+    journal: '',
+    volume: '',
+    issue: '',
+    pages: '',
+    doi: '',
+    url: '',
+    publisher: '',
+    _type: 'journals'
+  };
+
+  // Extract DOI
+  const doiMatch = text.match(/(?:doi:|https?:\/\/(?:dx\.)?doi\.org\/)(10\.\d{4,}\/[^\s,)"]+)/i);
+  if (doiMatch) {
+    result.doi = doiMatch[1].replace(/[.,;]$/, '');
+    text = text.replace(doiMatch[0], '').trim();
+  }
+
+  // Extract URL (non-DOI)
+  const urlMatch = text.match(/https?:\/\/[^\s,)"]+/);
+  if (urlMatch && !result.doi) {
+    result.url = urlMatch[0].replace(/[.,;]$/, '');
+    text = text.replace(urlMatch[0], '').trim();
+  }
+
+  // Extract year — first 4-digit number in parentheses, or standalone 19xx/20xx
+  let yearMatch = text.match(/\((\d{4})[a-z]?\)/);
+  if (!yearMatch) yearMatch = text.match(/\b(19|20)(\d{2})\b/);
+  if (yearMatch) {
+    result.year = yearMatch[1].length === 4 ? yearMatch[1] : yearMatch[1] + yearMatch[2];
+  }
+
+  // Detect type based on keywords
+  const lower = text.toLowerCase();
+  const hasInEditor = /\b(?:in|u):?\s+[A-ZŠĐČĆŽ][^(]*\(\s*(?:ed|eds|ur|urs|prir)\.?\s*\)/i.test(text);
+  const hasVolIssue = /\d+\s*\(\d+\)/.test(text);
+  const hasPublisherCity = /[A-ZŠĐČĆŽ][a-zšđčćž]+(?:\s+[A-ZŠĐČĆŽ][a-zšđčćž]+)*\s*:\s*[A-ZŠĐČĆŽ]/.test(text); // e.g. "New York: McGraw-Hill" or "Sarajevo: Ekonomski"
+
+  if (/\bproceedings\b|\bconference\b|\bsymposium\b|\bworkshop\b|\b(icml|neurips|aaai|ijcai)\b/i.test(text)) {
+    result._type = 'conferences';
+  } else if (hasInEditor) {
+    result._type = 'chapters';
+  } else if (!hasVolIssue && hasPublisherCity && !/\bjournal\b|\bčasopis\b|\brevije\b|\breview\b/i.test(text)) {
+    result._type = 'books';
+  }
+
+  // APA style: Authors (Year). Title. Journal, Volume(Issue), Pages.
+  // Try to split at the year
+  const yearSplit = text.match(/^(.+?)\(\s*(\d{4})[a-z]?\s*\)[.,]?\s*(.+)$/);
+  if (yearSplit) {
+    result.authors = cleanAuthors(yearSplit[1]);
+    result.year = yearSplit[2];
+    const rest = yearSplit[3];
+
+    // Now split rest into title and remainder (after first period followed by capital or italic indicator)
+    // Title is typically terminated by period. Journal follows.
+    const titleSplit = rest.match(/^(.+?[.?!])\s+(.+)$/);
+    if (titleSplit) {
+      result.title = titleSplit[1].replace(/[.?!]$/, '').trim();
+      let remainder = titleSplit[2].trim();
+
+      // Extract pages — pp. 123-145, str. 123-145, or 123-145
+      const pagesMatch = remainder.match(/(?:pp?\.?\s*|str\.?\s*)?(\d+[-–]\d+)/);
+      if (pagesMatch) {
+        result.pages = pagesMatch[1].replace('–', '-');
+        remainder = remainder.replace(pagesMatch[0], '').trim();
+      }
+
+      // Extract volume(issue) — e.g., "45(3)" or "Vol. 45, No. 3"
+      const volIssueMatch = remainder.match(/(\d+)\s*\((\d+[-–]?\d*)\)/);
+      if (volIssueMatch) {
+        result.volume = volIssueMatch[1];
+        result.issue = volIssueMatch[2];
+        remainder = remainder.replace(volIssueMatch[0], '').trim();
+      } else {
+        const volMatch = remainder.match(/\bvol(?:ume)?\.?\s*(\d+)/i);
+        if (volMatch) {
+          result.volume = volMatch[1];
+          remainder = remainder.replace(volMatch[0], '').trim();
+        }
+        const issueMatch = remainder.match(/\b(?:no|issue|iss)\.?\s*(\d+)/i);
+        if (issueMatch) {
+          result.issue = issueMatch[1];
+          remainder = remainder.replace(issueMatch[0], '').trim();
+        }
+      }
+
+      // Whatever remains is journal/publisher — clean separators
+      remainder = remainder.replace(/[,.;\s]+$/, '').replace(/^[,.;\s]+/, '').trim();
+
+      if (result._type === 'books') {
+        // "City: Publisher" pattern
+        const cityPubMatch = remainder.match(/^(.+?):\s*(.+)$/);
+        if (cityPubMatch) {
+          result.location = cityPubMatch[1].trim();
+          result.publisher = cityPubMatch[2].trim();
+        } else {
+          result.publisher = remainder;
+        }
+      } else if (result._type === 'chapters') {
+        // Try to find "In X (Ed.), BookTitle (pp. X-Y). City: Publisher"
+        // Also supports BHS: "U: X (ur.), Naziv knjige (str. X-Y). Grad: Izdavač"
+        const inMatch = remainder.match(/(?:in|u):?\s+(.+?)\s*\(\s*(?:eds?|ur|urs|prir)\.?\s*\)\s*,?\s*(.+)/i);
+        if (inMatch) {
+          result.editors = cleanAuthors(inMatch[1]);
+          let bookPart = inMatch[2].trim();
+          // Check for "City: Publisher" at end
+          const cityPubMatch = bookPart.match(/^(.+?)\.\s*([^:.]+):\s*(.+)$/);
+          if (cityPubMatch) {
+            result.book_title = cityPubMatch[1].replace(/\s*\(\s*\)\s*$/, '').replace(/[,.;]+$/, '').trim();
+            result.location = cityPubMatch[2].trim();
+            result.publisher = cityPubMatch[3].replace(/[,.;]+$/, '').trim();
+          } else {
+            result.book_title = bookPart.replace(/\s*\(\s*\)\s*$/, '').replace(/[,.;]+$/, '').trim();
+          }
+        } else {
+          result.book_title = remainder;
+        }
+      } else if (result._type === 'conferences') {
+        result.conference = remainder.replace(/^(?:in|u):?\s+/i, '').trim();
+      } else {
+        result.journal = remainder.replace(/^(?:in|u):?\s+/i, '').trim();
+      }
+    } else {
+      // Couldn't split title — best effort: take first sentence
+      result.title = rest.replace(/\.+$/, '').trim();
+    }
+    // Clean leading/trailing punctuation from title
+    if (result.title) {
+      result.title = result.title.replace(/^[,.;:\s]+/, '').replace(/[,.;:\s]+$/, '').trim();
+    }
+  } else {
+    // Harvard / IEEE fallback — simpler extraction
+    // Take everything before first period as authors+year, then title
+    const parts = text.split('.').map(p => p.trim()).filter(Boolean);
+    if (parts.length >= 2) {
+      result.authors = cleanAuthors(parts[0]);
+      result.title = parts[1];
+      if (parts[2]) result.journal = parts[2];
+    } else {
+      return null;
+    }
+  }
+
+  // Final cleanup
+  result.authors = result.authors.replace(/\s+/g, ' ').trim();
+  result.title = result.title.replace(/\s+/g, ' ').trim();
+  if (!result.authors && !result.title) return null;
+
+  return result;
+}
+
+function cleanAuthors(str) {
+  return str
+    .replace(/[&;]/g, ', ')
+    .replace(/\s+and\s+/gi, ', ')
+    .replace(/,\s*,+/g, ', ')    // collapse double commas from &-replacement
+    .replace(/\s+/g, ' ')
+    .replace(/[,.;]+$/, '')
+    .replace(/^[,.;]+/, '')
+    .trim();
+}
+
+function escape(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/* ================================================================
+   STATE PERSISTENCE (in-memory; works if localStorage available)
+   ================================================================ */
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch(e) { /* ignore */ }
+  // Also sync to cloud (debounced) if logged in
+  if (typeof currentUser !== 'undefined' && currentUser && sb) {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveProfileToCloud, 1000);
+  }
+}
+
+function loadState() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    if (s) state = JSON.parse(s);
+  } catch(e) { /* ignore */ }
+}
+
+function clearAll() {
+  openModal(t('confirmReset'), () => {
+    state = {
+      personal: {}, photo: null,
+      experience: [], education: [], training: [],
+      journals: [], conferences: [], books: [], chapters: [], other: [],
+      projects: [], consulting: [], awards: [], memberships: []
+    };
+    saveState();
+    document.querySelectorAll('[data-field]').forEach(i => i.value = '');
+    document.getElementById('photoPreview').innerHTML = `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>`;
+    renderAllRepeaters();
+    buildNav();
+    closeModal();
+    toast(t('resetDone'), 'success');
+  });
+}
+
+/* ================================================================
+   MODAL
+   ================================================================ */
+function openModal(msg, onConfirm) {
+  document.getElementById('modalBody').textContent = msg;
+  document.getElementById('modalBackdrop').classList.add('show');
+  document.getElementById('modalConfirm').onclick = onConfirm;
+}
+function closeModal() {
+  document.getElementById('modalBackdrop').classList.remove('show');
+}
+
+/* ================================================================
+   TOAST
+   ================================================================ */
+let toastTimer;
+function toast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + (type || '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+/* ================================================================
+   EXPORT — JSON
+   ================================================================ */
+function exportJSON() {
+  const data = JSON.parse(JSON.stringify(state));
+  // Strip _open flags
+  Object.keys(data).forEach(k => {
+    if (Array.isArray(data[k])) data[k].forEach(it => delete it._open);
+  });
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const name = profileFilename() + '.json';
+  saveAs(blob, name);
+  toast(t('exported') + ': JSON', 'success');
+}
+
+function importJSON() {
+  document.getElementById('importFileInput').click();
+}
+function handleImport(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      state = Object.assign({
+        personal: {}, photo: null,
+        experience: [], education: [], training: [],
+        journals: [], conferences: [], books: [], chapters: [], other: [],
+        projects: [], consulting: [], awards: [], memberships: []
+      }, data);
+      saveState();
+      location.reload();
+    } catch(err) {
+      toast('Error: ' + err.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function profileFilename() {
+  const fn = (state.personal.firstName || '').toLowerCase().replace(/\s+/g, '-');
+  const ln = (state.personal.lastName || '').toLowerCase().replace(/\s+/g, '-');
+  const base = [fn, ln].filter(Boolean).join('-') || 'profile';
+  return 'efsa-' + base;
+}
+
+function formatDateRange(from, to, current) {
+  if (!from && !to && !current) return '';
+  const f = from || '';
+  const t_ = current ? (lang === 'bs' ? 'trenutno' : 'present') : (to || '');
+  if (f && t_) return `${f} – ${t_}`;
+  return f || t_;
+}
+
+/* ================================================================
+   EXPORT — CV HTML BUILDER (shared by PDF & DOCX)
+   ================================================================ */
+function buildCvHtml(forWord) {
+  const p = state.personal;
+  const fullName = [p.titlePre, p.firstName, p.lastName, p.titlePost].filter(Boolean).join(' ');
+  const inst = lang === 'bs' ? 'Ekonomski fakultet u Sarajevu' : 'School of Economics and Business, Sarajevo';
+  const univ = lang === 'bs' ? 'Univerzitet u Sarajevu' : 'University of Sarajevo';
+
+  const BLUE = '#1a3a8a';
+  const GREEN = '#7bb53f';
+
+  // For Word, use simpler styling that Word can interpret well
+  // For PDF print, use full styling with modern CSS
+  const fontStack = forWord
+    ? "'Calibri', 'Arial', sans-serif"
+    : "'Georgia', 'Times New Roman', serif";
+  const headingFontStack = forWord
+    ? "'Calibri', 'Arial', sans-serif"
+    : "'Georgia', 'Times New Roman', serif";
+
+  function esc(s) {
+    if (s == null) return '';
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function nl2br(s) {
+    return esc(s).replace(/\n/g, '<br>');
+  }
+
+  // ============= SECTIONS =============
+  let html = '';
+
+  // Helper: read bilingual value from personal
+  const pv = (f) => itv(p, f);
+
+  // Header with name
+  html += `<div class="cv-header">`;
+  if (state.photo && !forWord) {
+    html += `<div class="cv-photo"><img src="${state.photo}" alt=""></div>`;
+  }
+  if (state.photo && forWord) {
+    html += `<div class="cv-photo"><img src="${state.photo}" alt="" width="90" height="90"></div>`;
+  }
+  html += `<div class="cv-header-text">`;
+  html += `<h1 class="cv-name">${esc(fullName || 'Profil')}</h1>`;
+  if (pv('position')) html += `<div class="cv-position">${esc(pv('position'))}</div>`;
+  const deptLine = [pv('department'), inst, univ].filter(Boolean).join(' · ');
+  if (deptLine) html += `<div class="cv-dept">${esc(deptLine)}</div>`;
+  html += `</div></div>`;
+
+  // Contact row
+  const c1 = [
+    p.email ? `✉ ${esc(p.email)}` : null,
+    p.phone ? `☎ ${esc(p.phone)}` : null,
+    pv('office') ? `${lang === 'bs' ? 'Kanc.' : 'Office'} ${esc(pv('office'))}` : null,
+    pv('consultHours') ? `${esc(pv('consultHours'))}` : null
+  ].filter(Boolean).join(' &nbsp;·&nbsp; ');
+  const c2 = [
+    p.orcid ? `ORCID: ${esc(p.orcid)}` : null,
+    p.scholar ? `Google Scholar` : null,
+    p.linkedin ? `LinkedIn` : null,
+    p.website ? esc(p.website) : null
+  ].filter(Boolean).join(' &nbsp;·&nbsp; ');
+  if (c1 || c2) {
+    html += `<div class="cv-contact">`;
+    if (c1) html += `<div>${c1}</div>`;
+    if (c2) html += `<div>${c2}</div>`;
+    html += `</div>`;
+  }
+
+  if (pv('bio')) html += `<div class="cv-bio">${nl2br(pv('bio'))}</div>`;
+
+  function section(letter, title) {
+    if (forWord) {
+      // Word renders table layout reliably — inline-block width/height don't work
+      return `<table class="cv-section-tbl" cellpadding="0" cellspacing="0" border="0"><tr>
+        <td class="cv-letter-cell">${letter}</td>
+        <td class="cv-section-title">${esc(title)}</td>
+      </tr></table>`;
+    }
+    return `<h2 class="cv-section"><span class="cv-letter">${letter}</span><span class="cv-section-text">${esc(title)}</span></h2>`;
+  }
+
+  function itemBlock(title, meta, lines) {
+    let h = `<div class="cv-item">`;
+    h += `<div class="cv-item-head">`;
+    if (title) h += `<span class="cv-item-title">${esc(title)}</span>`;
+    if (meta) h += `<span class="cv-item-meta">${esc(meta)}</span>`;
+    h += `</div>`;
+    (lines || []).forEach(l => {
+      if (l) h += `<div class="cv-item-line">${nl2br(l)}</div>`;
+    });
+    h += `</div>`;
+    return h;
+  }
+
+  // Experience
+  if (state.experience?.length) {
+    html += section('B', t('experienceTitle'));
+    state.experience.forEach(it => {
+      const head = [itv(it,'position'), itv(it,'employer')].filter(Boolean).join(' · ');
+      const range = formatDateRange(it.dateFrom, it.dateTo, it.current);
+      html += itemBlock(head, range, [itv(it,'location'), itv(it,'description')]);
+    });
+  }
+
+  // Education
+  if (state.education?.length) {
+    html += section('C', t('educationTitle'));
+    state.education.forEach(it => {
+      const head = [itv(it,'degree'), itv(it,'field')].filter(Boolean).join(' · ');
+      const range = formatDateRange(it.dateFrom, it.dateTo);
+      const lines = [
+        [itv(it,'institution'), itv(it,'location')].filter(Boolean).join(', '),
+        itv(it,'thesis') ? `${lang === 'bs' ? 'Tema' : 'Thesis'}: ${itv(it,'thesis')}` : null,
+        itv(it,'mentor') ? `${lang === 'bs' ? 'Mentor' : 'Supervisor'}: ${itv(it,'mentor')}` : null,
+        it.gpa ? `GPA: ${it.gpa}` : null
+      ];
+      html += itemBlock(head, range, lines);
+    });
+  }
+
+  // Training
+  if (state.training?.length) {
+    html += section('D', t('trainingTitle'));
+    state.training.forEach(it => {
+      const range = formatDateRange(it.dateFrom, it.dateTo);
+      const lines = [
+        [itv(it,'provider'), itv(it,'location')].filter(Boolean).join(', '),
+        itv(it,'certificate'),
+        itv(it,'description')
+      ];
+      html += itemBlock(itv(it,'name'), range, lines);
+    });
+  }
+
+  // Publications
+  const anyPubs = PUB_KEYS.some(k => (state[k]?.length || 0) > 0);
+  if (anyPubs) {
+    html += section('E', t('publicationsTitle'));
+
+    function pubSub(key, title, fmt) {
+      const items = state[key];
+      if (!items?.length) return;
+      html += `<h3 class="cv-subsection">${esc(title)}</h3>`;
+      html += `<ol class="cv-pub-list">`;
+      items.forEach(it => {
+        html += `<li>${esc(fmt(it))}</li>`;
+      });
+      html += `</ol>`;
+    }
+
+    pubSub('journals', t('pubJournals'), formatJournalCitation);
+    pubSub('conferences', t('pubConferences'), formatConfCitation);
+    pubSub('books', t('pubBooks'), formatBookCitation);
+    pubSub('chapters', t('pubChapters'), formatChapterCitation);
+    pubSub('other', t('pubOther'), formatOtherCitation);
+  }
+
+  // Projects
+  if (state.projects?.length) {
+    html += section('F', t('projectsTitle'));
+    state.projects.forEach(it => {
+      const range = formatDateRange(it.dateFrom, it.dateTo);
+      const lines = [
+        [itv(it,'role'), itv(it,'funder'), it.budget].filter(Boolean).join(' · '),
+        itv(it,'partners') ? `${lang === 'bs' ? 'Partneri' : 'Partners'}: ${itv(it,'partners')}` : null,
+        itv(it,'description')
+      ];
+      html += itemBlock(itv(it,'title'), range, lines);
+    });
+  }
+
+  // Consulting
+  if (state.consulting?.length) {
+    html += section('G', t('consultingTitle'));
+    state.consulting.forEach(it => {
+      const range = formatDateRange(it.dateFrom, it.dateTo);
+      const lines = [
+        [itv(it,'service_type'), itv(it,'role')].filter(Boolean).join(' · '),
+        itv(it,'description')
+      ];
+      html += itemBlock(itv(it,'client'), range, lines);
+    });
+  }
+
+  // Awards
+  if (state.awards?.length) {
+    html += section('H', t('awardsTitle'));
+    state.awards.forEach(it => {
+      html += itemBlock(itv(it,'name'), it.date, [itv(it,'organization'), itv(it,'description')]);
+    });
+  }
+
+  // Memberships
+  if (state.memberships?.length) {
+    html += section('I', t('membershipsTitle'));
+    state.memberships.forEach(it => {
+      const range = formatDateRange(it.dateFrom, it.dateTo, it.current);
+      html += itemBlock(itv(it,'organization'), range, [itv(it,'role'), itv(it,'description')]);
+    });
+  }
+
+  // CSS — for PDF printing & Word
+  const css = `
+    @page { size: A4; margin: 20mm 18mm; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: ${fontStack};
+      font-size: 11pt;
+      line-height: 1.45;
+      color: #1a1a1a;
+      margin: 0;
+      padding: 0;
+    }
+    .cv-container { max-width: 180mm; margin: 0 auto; }
+    .cv-header {
+      display: table;
+      width: 100%;
+      margin-bottom: 12pt;
+      padding-bottom: 10pt;
+      border-bottom: 2.5pt solid ${BLUE};
+    }
+    .cv-header::after {
+      content: '';
+      display: block;
+      width: 60pt;
+      height: 2pt;
+      background: ${GREEN};
+      margin-top: -2.5pt;
+    }
+    .cv-photo {
+      display: table-cell;
+      width: 100pt;
+      vertical-align: top;
+      padding-right: 14pt;
+    }
+    .cv-photo img {
+      width: 90pt;
+      height: 90pt;
+      object-fit: cover;
+      border-radius: 4pt;
+      border: 1.5pt solid ${BLUE};
+    }
+    .cv-header-text {
+      display: table-cell;
+      vertical-align: top;
+    }
+    .cv-name {
+      font-family: ${headingFontStack};
+      font-size: 24pt;
+      font-weight: 700;
+      color: ${BLUE};
+      margin: 0 0 4pt 0;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+    }
+    .cv-position {
+      font-size: 12pt;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 3pt;
+    }
+    .cv-dept {
+      font-size: 10pt;
+      color: #666;
+      font-style: italic;
+    }
+    .cv-contact {
+      font-size: 9.5pt;
+      color: #555;
+      margin-bottom: 14pt;
+      line-height: 1.6;
+    }
+    .cv-bio {
+      font-size: 10.5pt;
+      color: #1a1a1a;
+      margin-bottom: 16pt;
+      text-align: justify;
+      line-height: 1.5;
+    }
+    .cv-section {
+      font-family: ${headingFontStack};
+      font-size: 15pt;
+      font-weight: 700;
+      color: ${BLUE};
+      margin: 22pt 0 10pt 0;
+      padding-bottom: 4pt;
+      border-bottom: 1pt solid #ccc;
+      page-break-after: avoid;
+      display: flex;
+      align-items: center;
+      gap: 14pt;
+    }
+    .cv-letter {
+      display: inline-block;
+      width: 26pt;
+      height: 26pt;
+      background: ${BLUE};
+      color: white;
+      text-align: center;
+      line-height: 26pt;
+      font-size: 14pt;
+      font-weight: 700;
+      border-radius: 3pt;
+      flex-shrink: 0;
+    }
+    .cv-section-text { display: inline-block; }
+    /* Word-specific table section header */
+    .cv-section-tbl {
+      width: 100%;
+      margin: 22pt 0 10pt 0;
+      border-bottom: 1pt solid #ccc;
+      padding-bottom: 4pt;
+    }
+    .cv-letter-cell {
+      width: 28pt;
+      height: 26pt;
+      background: ${BLUE};
+      color: white;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 14pt;
+      font-weight: 700;
+      padding: 4pt 0;
+    }
+    .cv-section-title {
+      font-family: ${headingFontStack};
+      font-size: 15pt;
+      font-weight: 700;
+      color: ${BLUE};
+      padding-left: 14pt;
+      vertical-align: middle;
+    }
+    .cv-subsection {
+      font-family: ${headingFontStack};
+      font-size: 11.5pt;
+      font-weight: 700;
+      color: ${GREEN};
+      margin: 12pt 0 6pt 0;
+      page-break-after: avoid;
+    }
+    .cv-item {
+      margin-bottom: 10pt;
+      page-break-inside: avoid;
+    }
+    .cv-item-head {
+      display: table;
+      width: 100%;
+      margin-bottom: 3pt;
+    }
+    .cv-item-title {
+      display: table-cell;
+      font-weight: 700;
+      font-size: 11pt;
+      color: #1a1a1a;
+    }
+    .cv-item-meta {
+      display: table-cell;
+      text-align: right;
+      font-size: 9.5pt;
+      color: #666;
+      font-style: italic;
+      white-space: nowrap;
+      padding-left: 10pt;
+    }
+    .cv-item-line {
+      font-size: 10pt;
+      color: #333;
+      margin-bottom: 2pt;
+    }
+    .cv-pub-list {
+      padding-left: 22pt;
+      margin: 0 0 10pt 0;
+    }
+    .cv-pub-list li {
+      font-size: 10pt;
+      margin-bottom: 6pt;
+      text-align: justify;
+      line-height: 1.4;
+    }
+    .cv-footer {
+      text-align: center;
+      font-size: 8.5pt;
+      color: #999;
+      margin-top: 20pt;
+      padding-top: 8pt;
+      border-top: 0.5pt solid #ddd;
+    }
+  `;
+
+  const fullHtml = `<!DOCTYPE html>
+<html lang="${lang === 'bs' ? 'bs' : 'en'}">
+<head>
+<meta charset="UTF-8">
+<title>${esc(fullName)} — CV</title>
+<style>${css}</style>
+</head>
+<body>
+<div class="cv-container">
+${html}
+<div class="cv-footer">${esc(fullName)} · ${esc(inst)}</div>
+</div>
+</body>
+</html>`;
+
+  return fullHtml;
+}
+
+/* ================================================================
+   EXPORT — PDF (via browser print dialog — perfect diacritics)
+   ================================================================ */
+function exportPDF() {
+  if (!state.personal.firstName && !state.personal.lastName) {
+    toast(t('fillFirst'), 'error');
+    return;
+  }
+
+  const html = buildCvHtml(false);
+  const w = window.open('', '_blank');
+  if (!w) {
+    toast(lang === 'bs' ? 'Molimo dozvolite popup prozore' : 'Please allow popup windows', 'error');
+    return;
+  }
+  w.document.write(html);
+  w.document.close();
+
+  // Wait for content to render, then trigger print
+  w.onload = () => {
+    setTimeout(() => {
+      w.focus();
+      w.print();
+    }, 300);
+  };
+  // Fallback if onload doesn't fire (happens in some browsers for about:blank)
+  setTimeout(() => {
+    try { w.focus(); w.print(); } catch(e) {}
+  }, 800);
+
+  toast(lang === 'bs'
+    ? 'Otvara se dijalog za štampu. Odaberite "Sačuvaj kao PDF".'
+    : 'Print dialog opening. Choose "Save as PDF".', 'success');
+}
+
+/* ================= Citation formatters ================= */
+function formatJournalCitation(it) {
+  let s = '';
+  const authors = itv(it, 'authors');
+  const title = itv(it, 'title');
+  const journal = itv(it, 'journal');
+  if (authors) s += authors;
+  if (it.year) s += ` (${it.year})`;
+  if (title) s += `. ${title}`;
+  if (journal) s += `. ${journal}`;
+  if (it.volume) s += `, ${it.volume}`;
+  if (it.issue) s += `(${it.issue})`;
+  if (it.pages) s += `, ${it.pages}`;
+  if (it.doi) s += `. https://doi.org/${it.doi}`;
+  else if (it.url) s += `. ${it.url}`;
+  return s.replace(/^\.+\s*/, '').trim() + '.';
+}
+function formatConfCitation(it) {
+  let s = '';
+  const authors = itv(it, 'authors');
+  const title = itv(it, 'title');
+  const conference = itv(it, 'conference');
+  const location = itv(it, 'location');
+  if (authors) s += authors;
+  if (it.year) s += ` (${it.year})`;
+  if (title) s += `. ${title}`;
+  if (conference) s += `. ${conference}`;
+  if (location) s += `, ${location}`;
+  if (it.pages) s += `, pp. ${it.pages}`;
+  if (it.doi) s += `. https://doi.org/${it.doi}`;
+  else if (it.url) s += `. ${it.url}`;
+  return s.trim() + '.';
+}
+function formatBookCitation(it) {
+  let s = '';
+  const authors = itv(it, 'authors');
+  const title = itv(it, 'title');
+  const publisher = itv(it, 'publisher');
+  const location = itv(it, 'location');
+  if (authors) s += authors;
+  if (it.year) s += ` (${it.year})`;
+  if (title) s += `. ${title}`;
+  if (location) s += `. ${location}`;
+  if (publisher) s += `: ${publisher}`;
+  if (it.isbn) s += `. ISBN: ${it.isbn}`;
+  return s.trim() + '.';
+}
+function formatChapterCitation(it) {
+  let s = '';
+  const authors = itv(it, 'authors');
+  const title = itv(it, 'title');
+  const editors = itv(it, 'editors');
+  const bookTitle = itv(it, 'book_title');
+  const publisher = itv(it, 'publisher');
+  const location = itv(it, 'location');
+  if (authors) s += authors;
+  if (it.year) s += ` (${it.year})`;
+  if (title) s += `. ${title}`;
+  if (editors) s += `. In: ${editors} (Eds.)`;
+  if (bookTitle) s += `, ${bookTitle}`;
+  if (it.pages) s += ` (pp. ${it.pages})`;
+  if (location) s += `. ${location}`;
+  if (publisher) s += `: ${publisher}`;
+  if (it.doi) s += `. https://doi.org/${it.doi}`;
+  return s.trim() + '.';
+}
+function formatOtherCitation(it) {
+  let s = '';
+  const authors = itv(it, 'authors');
+  const title = itv(it, 'title');
+  const type = itv(it, 'type');
+  const publisher = itv(it, 'publisher');
+  const description = itv(it, 'description');
+  if (authors) s += authors;
+  if (it.year) s += ` (${it.year})`;
+  if (title) s += `. ${title}`;
+  if (type) s += ` [${type}]`;
+  if (publisher) s += `. ${publisher}`;
+  if (it.url) s += `. ${it.url}`;
+  if (description) s += `. ${description}`;
+  return s.trim() + '.';
+}
+
+/* ================================================================
+   EXPORT — DOCX
+   ================================================================ */
+function exportDOCX() {
+  if (!state.personal.firstName && !state.personal.lastName) {
+    toast(t('fillFirst'), 'error');
+    return;
+  }
+
+  // Build CV as HTML, wrap in Word-compatible envelope.
+  // MS Word natively opens HTML files saved with .doc extension and
+  // application/msword MIME type. Diacritics work perfectly because
+  // the content is UTF-8 HTML (not jsPDF bitmap fonts).
+  const innerHtml = buildCvHtml(true);
+
+  // Strip the outer html/body and extract content + css
+  const cssMatch = innerHtml.match(/<style>([\s\S]*?)<\/style>/);
+  const bodyMatch = innerHtml.match(/<body>([\s\S]*?)<\/body>/);
+  const css = cssMatch ? cssMatch[1] : '';
+  const body = bodyMatch ? bodyMatch[1] : innerHtml;
+
+  const wordHtml = `<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="ProgId" content="Word.Document">
+<meta name="Generator" content="Microsoft Word 15">
+<meta name="Originator" content="Microsoft Word 15">
+<title>${state.personal.firstName || ''} ${state.personal.lastName || ''} — CV</title>
+<!--[if gte mso 9]>
+<xml>
+  <w:WordDocument>
+    <w:View>Print</w:View>
+    <w:Zoom>100</w:Zoom>
+    <w:DoNotOptimizeForBrowser/>
+  </w:WordDocument>
+</xml>
+<![endif]-->
+<style>
+${css}
+</style>
+</head>
+<body>
+${body}
+</body>
+</html>`;
+
+  // Add UTF-8 BOM so Word correctly detects encoding
+  const BOM = '\ufeff';
+  const blob = new Blob([BOM + wordHtml], {
+    type: 'application/msword;charset=utf-8'
+  });
+  saveAs(blob, profileFilename() + '.doc');
+  toast(t('exported') + ': Word (.doc)', 'success');
+}
+
+/* ================================================================
+   ======== SUPABASE INTEGRATION ==================================
+   Configuration — REPLACE THESE VALUES from your Supabase project:
+   Supabase Dashboard → Project Settings → API → Project URL & anon public key
+   ================================================================ */
+const SUPABASE_CONFIG = {
+  url: 'YOUR_SUPABASE_URL',           // e.g. 'https://abcdefgh.supabase.co'
+  anonKey: 'YOUR_SUPABASE_ANON_KEY',  // the 'anon public' key (safe to expose)
+  allowedDomain: 'efsa.unsa.ba',
+  adminEmails: ['lejla.turulja@efsa.unsa.ba', 'ljiljan.veselinovic@efsa.unsa.ba']
+};
+
+let sb = null;          // Supabase client instance
+let currentUser = null; // { id, email }
+let isAdmin = false;
+let saveTimer = null;   // debounce for cloud saves
+
+// Initialize Supabase client (or show friendly error if not configured)
+function initSupabase() {
+  const cfg = SUPABASE_CONFIG;
+  const dot = document.getElementById('authConnDot');
+  const txt = document.getElementById('authConnText');
+
+  if (!cfg.url || cfg.url.startsWith('YOUR_') || !cfg.anonKey || cfg.anonKey.startsWith('YOUR_')) {
+    dot.classList.add('error');
+    txt.textContent = 'Supabase nije konfigurisan — postavite URL i ključ u SUPABASE_CONFIG';
+    return false;
+  }
+  try {
+    sb = supabase.createClient(cfg.url, cfg.anonKey);
+    dot.classList.add('connected');
+    txt.textContent = 'Povezan sa serverom';
+    return true;
+  } catch (err) {
+    dot.classList.add('error');
+    txt.textContent = 'Greška pri povezivanju: ' + err.message;
+    return false;
+  }
+}
+
+// Check if there's an active session (user already logged in from before)
+async function checkSession() {
+  if (!sb) return;
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    await onLoginSuccess(session.user);
+  }
+}
+
+function setAuthError(msg, viewId) {
+  const el = document.getElementById(viewId === 'signup' ? 'signupError' : 'authError');
+  if (msg) {
+    el.textContent = msg;
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+function setAuthSuccess(msg) {
+  const el = document.getElementById('signupSuccess');
+  if (msg) { el.textContent = msg; el.style.display = 'block'; }
+  else el.style.display = 'none';
+}
+
+function switchToSignup() {
+  document.getElementById('authLoginView').style.display = 'none';
+  document.getElementById('authSignupView').style.display = 'block';
+  setAuthError('', 'signup');
+  setAuthSuccess('');
+}
+function switchToLogin() {
+  document.getElementById('authSignupView').style.display = 'none';
+  document.getElementById('authLoginView').style.display = 'block';
+  setAuthError('', 'login');
+}
+
+async function doLogin() {
+  if (!sb) { setAuthError('Sistem nije povezan sa serverom', 'login'); return; }
+  setAuthError('', 'login');
+  const email = document.getElementById('authEmail').value.trim().toLowerCase();
+  const password = document.getElementById('authPassword').value;
+
+  if (!email || !password) { setAuthError('Unesite email i lozinku', 'login'); return; }
+
+  const btnLabel = document.getElementById('authLoginLabel');
+  btnLabel.textContent = 'Prijavljivanje…';
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  btnLabel.textContent = 'Prijava';
+
+  if (error) {
+    setAuthError('Pogrešan email ili lozinka. Ako se prijavljujete prvi put, odaberite "Prvi put se prijavljujem".', 'login');
+    return;
+  }
+  await onLoginSuccess(data.user);
+}
+
+async function doSignup() {
+  if (!sb) { setAuthError('Sistem nije povezan sa serverom', 'signup'); return; }
+  setAuthError('', 'signup');
+  setAuthSuccess('');
+
+  const email = document.getElementById('signupEmail').value.trim().toLowerCase();
+  const password = document.getElementById('signupPassword').value;
+  const password2 = document.getElementById('signupPassword2').value;
+
+  if (!email.endsWith('@' + SUPABASE_CONFIG.allowedDomain)) {
+    setAuthError(`Dozvoljeni su samo @${SUPABASE_CONFIG.allowedDomain} email-ovi`, 'signup');
+    return;
+  }
+  if (password.length < 8) { setAuthError('Lozinka mora imati najmanje 8 znakova', 'signup'); return; }
+  if (password !== password2) { setAuthError('Lozinke se ne podudaraju', 'signup'); return; }
+
+  const { data, error } = await sb.auth.signUp({ email, password });
+  if (error) {
+    setAuthError('Greška: ' + error.message, 'signup');
+    return;
+  }
+  if (data.user && !data.session) {
+    setAuthSuccess('Registracija uspješna! Provjerite vaš email i kliknite link za potvrdu, pa se onda vratite i prijavite.');
+  } else if (data.session) {
+    await onLoginSuccess(data.user);
+  }
+}
+
+async function showForgotPassword() {
+  const email = document.getElementById('authEmail').value.trim().toLowerCase();
+  if (!email) { setAuthError('Prvo unesite vaš email u polje iznad', 'login'); return; }
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.href
+  });
+  if (error) { setAuthError('Greška: ' + error.message, 'login'); return; }
+  setAuthError('', 'login');
+  toast('Email za reset lozinke je poslan. Provjerite vaš inbox.', 'success');
+}
+
+async function doLogout() {
+  if (!sb) return;
+  await sb.auth.signOut();
+  currentUser = null;
+  isAdmin = false;
+  // Reset in-memory state
+  state = getEmptyState();
+  document.getElementById('authOverlay').classList.remove('hidden');
+  document.getElementById('topBar').style.display = 'none';
+  document.getElementById('mainLayout').style.display = 'none';
+  document.getElementById('userDropdown').classList.remove('show');
+}
+
+async function onLoginSuccess(user) {
+  currentUser = { id: user.id, email: user.email };
+  isAdmin = SUPABASE_CONFIG.adminEmails.includes(user.email);
+
+  // Hide login, show app
+  document.getElementById('authOverlay').classList.add('hidden');
+  document.getElementById('topBar').style.display = '';
+  document.getElementById('mainLayout').style.display = '';
+
+  // Update user chip
+  document.getElementById('userEmail').textContent = user.email;
+  document.getElementById('userAvatar').textContent = user.email[0].toUpperCase();
+  if (isAdmin) {
+    document.getElementById('adminBtn').style.display = '';
+  }
+
+  // Load profile from cloud
+  await loadProfileFromCloud();
+  // Bind UI
+  buildNav();
+  showSection('personal');
+  bindPersonalFields();
+  renderAllRepeaters();
+  updateLang();
+  updatePubCounts();
+  if (state.photo) {
+    document.getElementById('photoPreview').innerHTML = `<img src="${state.photo}" alt="">`;
+  }
+}
+
+async function loadProfileFromCloud() {
+  if (!sb || !currentUser) return;
+  setSaveStatus('loading');
+  const { data, error } = await sb
+    .from('profiles')
+    .select('data')
+    .eq('user_id', currentUser.id)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Load error:', error);
+    setSaveStatus('error');
+    toast('Greška pri učitavanju: ' + error.message, 'error');
+    return;
+  }
+  if (data && data.data) {
+    state = Object.assign(getEmptyState(), data.data);
+  }
+  setSaveStatus('saved');
+}
+
+async function saveProfileToCloud() {
+  if (!sb || !currentUser) return;
+  setSaveStatus('saving');
+  const dataToSave = JSON.parse(JSON.stringify(state));
+  // Strip UI-only flags
+  Object.keys(dataToSave).forEach(k => {
+    if (Array.isArray(dataToSave[k])) dataToSave[k].forEach(it => delete it._open);
+  });
+
+  const { error } = await sb
+    .from('profiles')
+    .upsert({
+      user_id: currentUser.id,
+      email: currentUser.email,
+      data: dataToSave,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id' });
+
+  if (error) {
+    console.error('Save error:', error);
+    setSaveStatus('error');
+    toast('Greška pri snimanju: ' + error.message, 'error');
+    return;
+  }
+  setSaveStatus('saved');
+}
+
+function setSaveStatus(status) {
+  const ind = document.getElementById('saveIndicator');
+  const txt = document.getElementById('saveText');
+  ind.classList.remove('saving', 'error');
+  if (status === 'saving') {
+    ind.classList.add('saving');
+    txt.textContent = 'Snima se…';
+  } else if (status === 'error') {
+    ind.classList.add('error');
+    txt.textContent = 'Greška pri snimanju';
+  } else if (status === 'loading') {
+    ind.classList.add('saving');
+    txt.textContent = 'Učitavanje…';
+  } else {
+    txt.textContent = 'Snimljeno';
+  }
+}
+
+function getEmptyState() {
+  return {
+    personal: {}, photo: null,
+    experience: [], education: [], training: [],
+    journals: [], conferences: [], books: [], chapters: [], other: [],
+    projects: [], consulting: [], awards: [], memberships: []
+  };
+}
+
+// User menu toggle
+function toggleUserMenu() {
+  document.getElementById('userDropdown').classList.toggle('show');
+}
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.user-menu')) {
+    document.getElementById('userDropdown')?.classList.remove('show');
+  }
+});
+
+/* ================================================================
+   ADMIN DASHBOARD
+   ================================================================ */
+let adminProfiles = [];
+
+async function openAdmin() {
+  if (!isAdmin || !sb) return;
+  document.getElementById('adminModal').classList.add('show');
+  const list = document.getElementById('adminList');
+  list.innerHTML = '<div style="padding:40px;text-align:center;color:var(--ink-faint)">Učitavanje profila…</div>';
+
+  const { data, error } = await sb
+    .from('profiles')
+    .select('email, data, updated_at')
+    .order('updated_at', { ascending: false });
+
+  if (error) {
+    list.innerHTML = `<div style="padding:40px;text-align:center;color:#c53030">Greška: ${error.message}</div>`;
+    return;
+  }
+  adminProfiles = data || [];
+  populateAdminFilters();
+  renderAdminList();
+}
+
+function closeAdmin() {
+  document.getElementById('adminModal').classList.remove('show');
+}
+
+function populateAdminFilters() {
+  const deptSelect = document.getElementById('adminDept');
+  const depts = new Set();
+  adminProfiles.forEach(p => {
+    const d = getFieldFromProfile(p.data, 'personal', 'department');
+    if (d) depts.add(d);
+  });
+  deptSelect.innerHTML = '<option value="">Sve katedre</option>' +
+    [...depts].sort().map(d => `<option value="${d.replace(/"/g, '&quot;')}">${d}</option>`).join('');
+}
+
+// Read a possibly-bilingual field from raw profile data (admin context, no language context)
+function getFieldFromProfile(profileData, section, field) {
+  if (!profileData || !profileData[section]) return '';
+  const v = profileData[section][field];
+  if (v == null) return '';
+  if (typeof v === 'object') return v.bs || v.en || '';
+  return v;
+}
+
+function countPublications(profileData) {
+  if (!profileData) return 0;
+  return ['journals','conferences','books','chapters','other']
+    .reduce((s, k) => s + (profileData[k]?.length || 0), 0);
+}
+
+function renderAdminList() {
+  const search = document.getElementById('adminSearch').value.trim().toLowerCase();
+  const dept = document.getElementById('adminDept').value;
+  const minPubs = parseInt(document.getElementById('adminMinPubs').value || 0);
+
+  const filtered = adminProfiles.filter(p => {
+    const fn = getFieldFromProfile(p.data, 'personal', 'firstName');
+    const ln = getFieldFromProfile(p.data, 'personal', 'lastName');
+    const d = getFieldFromProfile(p.data, 'personal', 'department');
+    const pubs = countPublications(p.data);
+    const fullName = (fn + ' ' + ln).toLowerCase();
+
+    if (dept && d !== dept) return false;
+    if (pubs < minPubs) return false;
+    if (search && !fullName.includes(search) && !p.email.toLowerCase().includes(search) && !(d || '').toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  const list = document.getElementById('adminList');
+  const stats = document.getElementById('adminStats');
+  stats.innerHTML = `
+    <span><span class="admin-stat-num">${filtered.length}</span> profila</span>
+    <span><span class="admin-stat-num">${filtered.reduce((s,p) => s + countPublications(p.data), 0)}</span> publikacija ukupno</span>
+    <span><span class="admin-stat-num">${filtered.reduce((s,p) => s + (p.data?.projects?.length || 0), 0)}</span> projekata</span>
+  `;
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<div style="padding:40px;text-align:center;color:var(--ink-faint)">Nema profila koji odgovaraju filterima.</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map((p, idx) => {
+    const fn = getFieldFromProfile(p.data, 'personal', 'firstName');
+    const ln = getFieldFromProfile(p.data, 'personal', 'lastName');
+    const pos = getFieldFromProfile(p.data, 'personal', 'position');
+    const dept = getFieldFromProfile(p.data, 'personal', 'department');
+    const pubs = countPublications(p.data);
+    const projs = p.data?.projects?.length || 0;
+    const updated = p.updated_at ? new Date(p.updated_at).toLocaleDateString('bs-BA') : '—';
+    const name = (fn + ' ' + ln).trim() || p.email;
+    const meta = [pos, dept, `Ažurirano: ${updated}`].filter(Boolean).join(' · ');
+    return `
+      <div class="admin-row">
+        <div>
+          <div class="admin-row-name">${escape(name)}</div>
+          <div class="admin-row-email">${escape(p.email)}</div>
+        </div>
+        <div class="admin-row-meta">${escape(meta)}</div>
+        <div class="admin-row-num" title="Publikacija">${pubs}</div>
+        <div class="admin-row-num" title="Projekata">${projs}</div>
+        <div class="admin-row-actions">
+          <button onclick='adminViewProfile(${idx})'>CV ↗</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Store filtered for export actions
+  window._adminFiltered = filtered;
+}
+
+function adminViewProfile(idx) {
+  const list = window._adminFiltered || adminProfiles;
+  const p = list[idx];
+  if (!p) return;
+  // Temporarily swap state to build CV HTML, then restore
+  const savedState = state;
+  state = Object.assign(getEmptyState(), p.data);
+  const html = buildCvHtml(false);
+  state = savedState;
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(() => { try { w.focus(); w.print(); } catch(e){} }, 600);
+}
+
+function adminExportJson() {
+  const list = window._adminFiltered || adminProfiles;
+  const exportData = list.map(p => ({
+    email: p.email,
+    updated_at: p.updated_at,
+    profile: p.data
+  }));
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+  saveAs(blob, `efsa-svi-profili-${new Date().toISOString().slice(0,10)}.json`);
+  toast(`Izvezeno ${list.length} profila`, 'success');
+}
+
+function adminExportCsv() {
+  const list = window._adminFiltered || adminProfiles;
+  const rows = [['Email', 'Ime', 'Prezime', 'Katedra', 'Pozicija', 'Tip publikacije', 'Autori', 'Godina', 'Naslov', 'Časopis/Izdavač', 'Volume', 'Issue', 'Stranice', 'DOI']];
+
+  list.forEach(p => {
+    const email = p.email;
+    const fn = getFieldFromProfile(p.data, 'personal', 'firstName');
+    const ln = getFieldFromProfile(p.data, 'personal', 'lastName');
+    const dept = getFieldFromProfile(p.data, 'personal', 'department');
+    const pos = getFieldFromProfile(p.data, 'personal', 'position');
+
+    const addPubs = (type, arr, venueField) => {
+      (arr || []).forEach(it => {
+        rows.push([
+          email, fn, ln, dept, pos, type,
+          getFieldFromProfile(it, '_item', 'authors') || itv2(it, 'authors'),
+          it.year || '',
+          itv2(it, 'title'),
+          itv2(it, venueField),
+          it.volume || '', it.issue || '', it.pages || '', it.doi || ''
+        ]);
+      });
+    };
+    // Helper that reads first available language value from an item
+    function itv2(item, field) {
+      const v = item[field];
+      if (v == null) return '';
+      if (typeof v === 'object') return v.bs || v.en || '';
+      return v;
+    }
+    addPubs('Journal', p.data?.journals, 'journal');
+    addPubs('Conference', p.data?.conferences, 'conference');
+    addPubs('Book', p.data?.books, 'publisher');
+    addPubs('Chapter', p.data?.chapters, 'book_title');
+    addPubs('Other', p.data?.other, 'publisher');
+  });
+
+  const csv = rows.map(r => r.map(cell => {
+    const s = String(cell || '').replace(/"/g, '""');
+    return /[,"\n]/.test(s) ? `"${s}"` : s;
+  }).join(',')).join('\n');
+
+  const BOM = '\ufeff';
+  const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8' });
+  saveAs(blob, `efsa-publikacije-${new Date().toISOString().slice(0,10)}.csv`);
+  toast(`Izvezeno ${rows.length - 1} publikacija`, 'success');
+}
+
+function adminExportAllPdfs() {
+  const list = window._adminFiltered || adminProfiles;
+  if (list.length === 0) { toast('Nema profila za izvoz', 'error'); return; }
+  if (list.length > 10) {
+    if (!confirm(`Otvorit će se ${list.length} prozora za štampu. Nastaviti?`)) return;
+  }
+  const savedState = state;
+  list.forEach((p, i) => {
+    setTimeout(() => {
+      state = Object.assign(getEmptyState(), p.data);
+      const html = buildCvHtml(false);
+      const w = window.open('', '_blank');
+      if (w) {
+        w.document.write(html);
+        w.document.close();
+        setTimeout(() => { try { w.focus(); w.print(); } catch(e){} }, 400);
+      }
+      if (i === list.length - 1) state = savedState;
+    }, i * 800);
+  });
+  toast(`Generiše se ${list.length} CV-jeva…`, 'success');
+}
+
+/* ============= START ============= */
+// Modified init: first set up auth, then (conditionally) init the app
+async function appInit() {
+  // Still attach language handlers and static translations for login screen
+  updateLang();
+
+  // Try to init Supabase
+  const ok = initSupabase();
+  if (ok) {
+    await checkSession();  // auto-login if session exists
+  } else {
+    // Supabase not configured — fall back to local-only mode for testing
+    console.warn('Supabase not configured. Running in local-only mode.');
+    document.getElementById('authOverlay').classList.add('hidden');
+    document.getElementById('topBar').style.display = '';
+    document.getElementById('mainLayout').style.display = '';
+    document.getElementById('userEmail').textContent = 'lokalni test';
+    document.getElementById('userAvatar').textContent = 'L';
+    init();
+  }
+}
+
+appInit();
+</script>
+</body>
+</html>
